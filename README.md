@@ -24,22 +24,15 @@ where costs can be prohibitivly expensive.
 - **Push to Hugging Face**: Push the generated dataset to Hugging Face in parquet
 format.
 
-## Model Compatibility
-
-The library should work with most LLM models. It has been tested with the
-following models so far:
-
-- **LLaMA3**: The library is designed to work with the LLaMA model, specifically the `llama3:latest` model.
-- **Mistral**: The library is compatible with the Mistral model, which is a fork of the GPT-3 model.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.11+
 - `promptsmith` library installed
-- Ollama CLI installed and running
-- Model `llama3:latest` downloaded via Ollama
+- Ollama CLI installed and running (see [Ollama Installation](https://ollama.com/)
+- A Model pulled via Ollama (see [Model Compatibility](#model-compatibility))
 
 ### Installation
 
@@ -122,6 +115,15 @@ If you encounter any errors while running the script, here are a few common trou
 3. **Check Ollama Logs**:  
    Inspect the logs for any error messages that might provide more context on
    what went wrong, these can be found in the `~/.ollama/logs` directory.
+
+
+## Model Compatibility
+
+The library should work with most LLM models. It has been tested with the
+following models so far:
+
+- **LLaMA3**: The library is designed to work with the LLaMA model, specifically the `llama3:latest` model.
+- **Mistral**: The library is compatible with the Mistral model, which is a fork of the GPT-3 model.
 
 ### Contributing
 
