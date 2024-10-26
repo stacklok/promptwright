@@ -1,5 +1,8 @@
 from setuptools import find_packages, setup
 
+with open("README.md") as fh:
+    long_description = fh.read()
+
 setup(
     name="promptwright",
     version="0.1.0",
@@ -27,7 +30,7 @@ setup(
     author="Luke Hinds",
     author_email="luke@stacklok.com",
     description="LLM based Synthetic Data Generation",
-    long_description=open("README.md").read(),  # noqa: SIM115
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/StacklokLabs/promptwright",
     classifiers=[
