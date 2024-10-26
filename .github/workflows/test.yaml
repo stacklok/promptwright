@@ -1,0 +1,77 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+        pip install pytest-cov
+
+    - name: Run tests with pytest
+      run: |
+        make test
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
+        
+    - name: Run style checks
+      run: |
+        pip install ruff
+        ruff check .
+        ruff format --check .
+
+  # Additional job for running longer tests or integration tests if needed
+  integration:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    # - name: Install dependencies
+    #   run: |
+    #     python -m pip install --upgrade pip
+    #     pip install -e ".[dev]"
+
+    # - name: Set up Ollama (don't run on public actions)
+    #   run: |
+    #     curl -L https://ollama.ai/download/ollama-linux-amd64 -o ollama
+    #     chmod +x ollama
+    #     ./ollama serve &
+    #     sleep 5  # Give Ollama time to start
+
+    # - name: Run integration tests
+    #   run: |
+    #     make test-integration

@@ -1,0 +1,129 @@
+[project]
+name = "promptsmith"
+version = "0.1.0"
+description = "A tool for generating and managing prompts for local LLMs using Ollama"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.25.0",
+    "tqdm>=4.65.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "requests-mock>=1.11.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers"
+testpaths = [
+    "tests",
+    "tests/integration",
+]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "integration: marks tests that require Ollama integration",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+
+[tool.ruff]
+# Target Python version
+target-version = "py311"
+
+# Line length
+line-length = 100
+
+[tool.ruff.lint]
+# Enable all rules by default, then configure specific ones
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "YTT", # flake8-2020
+    "S",   # flake8-bandit
+    "DTZ", # flake8-datetimez
+    "T10", # flake8-debugger
+    "ISC", # flake8-implicit-str-concat
+    "A",   # flake8-builtins
+    "C4",  # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "T20", # flake8-print
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "ARG", # flake8-unused-arguments
+    "ERA", # eradicate
+    "PLC", # pylint
+    "PLE", # pylint-errors
+    "PLR", # pylint-refactor
+    "PLW", # pylint-warnings
+    "TRY", # tryceratops
+]
+
+ignore = [
+    "E501",      # Line too long (handled by formatter)
+    "ISC001",    # 
+    "B008",      # Do not perform function call in argument defaults
+    "C901",      # Function is too complex
+    "T201",      # Print found
+    "S101",      # Use of assert detected
+    "PLR0913",   # Too many arguments to function call
+    "PLR0915",   # Too many statements
+]
+
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Files to exclude
+exclude = [
+    ".git",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Test files can use assertions and have long functions
+"tests/*" = ["S101", "PLR0915"]
+"conftest.py" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["promptsmith"]
+lines-between-types = 1
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pylint]
+max-args = 8
+
+[tool.ruff.format]
+# Formatting options
+indent-style = "space"
+line-ending = "lf"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "double"
+multiline-quotes = "double"
