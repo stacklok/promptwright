@@ -26,14 +26,10 @@ minversion = "6.0"
 addopts = "-ra -q --strict-markers"
 testpaths = [
     "tests",
-    "tests/integration",
 ]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-markers = [
-    "integration: marks tests that require Ollama integration",
-]
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",

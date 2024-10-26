@@ -1,11 +1,8 @@
 # Makefile
-.PHONY: test test-integration test-all lint
+.PHONY: test test-all lint
 
 test:
-	pytest -v -m "not integration" --cov=promptsmith --cov-report=xml
-
-test-integration:
-	pytest -v -m integration
+	pytest -v -m --cov=promptsmith --cov-report=xml
 
 test-all:
 	pytest -v
