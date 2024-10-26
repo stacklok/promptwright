@@ -46,9 +46,9 @@ ollama pull {model_name} # whichever model you want to use
 There are a few examples in the `examples` directory that demonstrate how to use
 the library to generate different topic based datasets.
 
-### Running the Example
+### Running an Example
 
-To run the example:
+To run an example:
 
 1. Ensure you have started Ollama by running `ollama serve`.
 2. Verify that the required model is downloaded (e.g. `llama3.2:latest`).
@@ -63,7 +63,7 @@ To run the example:
             temperature=0.9,  # Higher temperature for more creative variations
             max_retries=2,
   ```
-5. Run the example file:
+5. Run your chosen example file:
    ```bash
    python example/creative_writing.py
    ```
@@ -98,13 +98,7 @@ To run the example:
 - **LocalDataEngine**: The main engine responsible for interacting with the LLM client and generating datasets.
 - **LocalEngineArguments**: A configuration class that defines the instructions, system prompt, model name temperature, retries, and prompt templates used for generating data.
 - **OllamaClient**: A client class for interacting with the Ollama API.
-- **HFUploader**: A utility class for uploading datasets to Hugging Face.
-
-#### Methods
-
-- **`list_local_models()`**: Lists all available models in your local Ollama instance.
-- **`create_data()`**: Generates data based on the provided configuration and parameters such as `num_steps` and `batch_size`.
-- **`save(filename)`**: Saves the generated dataset to a JSONL file.
+- **HFUploader**: A utility class for uploading datasets to Hugging Face (pass in the path to the dataset and token).
 
 ### Troubleshooting
 
@@ -124,14 +118,17 @@ If you encounter any errors while running the script, here are a few common trou
    Inspect the logs for any error messages that might provide more context on
    what went wrong, these can be found in the `~/.ollama/logs` directory.
 
-
 ## Model Compatibility
 
 The library should work with most LLM models. It has been tested with the
 following models so far:
 
-- **LLaMA3**: The library is designed to work with the LLaMA model, specifically the `llama3:latest` model.
-- **Mistral**: The library is compatible with the Mistral model, which is a fork of the GPT-3 model.
+- **LLaMA3**: The library is designed to work with the LLaMA model, specifically
+the `llama3:latest` model.
+- **Mistral**: The library is compatible with the Mistral model, which is a fork
+of the GPT-3 model.
+
+If you test anymore, please make a pull request to update this list!
 
 ### Contributing
 
