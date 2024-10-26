@@ -1,6 +1,6 @@
 def test_dataset_initialization():
     """Test Dataset class initialization."""
-    from promptsmith import Dataset
+    from promptweaver import Dataset
 
     dataset = Dataset()
     assert len(dataset) == 0
@@ -9,7 +9,7 @@ def test_dataset_initialization():
 
 def test_dataset_validation():
     """Test sample validation."""
-    from promptsmith import Dataset
+    from promptweaver import Dataset
 
     valid_sample = {
         "messages": [
@@ -26,7 +26,7 @@ def test_dataset_validation():
 
 def test_dataset_add_samples():
     """Test adding samples to dataset."""
-    from promptsmith import Dataset
+    from promptweaver import Dataset
 
     dataset = Dataset()
 
@@ -52,7 +52,7 @@ def test_dataset_add_samples():
 
 def test_dataset_filter_by_role():
     """Test filtering samples by role."""
-    from promptsmith import Dataset
+    from promptweaver import Dataset
 
     dataset = Dataset()
 

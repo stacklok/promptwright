@@ -1,13 +1,12 @@
-# PromptSmith - Large Dataset Generation
+# promptweaver - Large Dataset Generation
 
-[![Tests](https://github.com/StacklokLabs/promptsmith/actions/workflows/test.yml/badge.svg)](https://github.com/StacklokLabs/promptsmith/actions/workflows/test.yml)
-[![Python Version](https://img.shields.io/pypi/pyversions/promptsmith.svg)](https://pypi.org/project/promptsmith/)
+[![Tests](https://github.com/StacklokLabs/promptweaver/actions/workflows/test.yml/badge.svg)](https://github.com/StacklokLabs/promptweaver/actions/workflows/test.yml)
+[![Python Version](https://img.shields.io/pypi/pyversions/promptweaver.svg)](https://pypi.org/project/promptweaver/)
 
 
 <img src="image.png" width="350" height="350">
 
-
-PromptSmith is a Python library from [Stacklok](https://stacklok.com) designed for generating large datasets using a local LLM via Ollama. The library offers a flexible and easy-to-use interface to
+promptweaver is a Python library from [Stacklok](https://stacklok.com) designed for generating large datasets using a local LLM via Ollama. The library offers a flexible and easy-to-use interface to
 enabling users the ability to generate structured datasets.
 
 This was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
@@ -29,7 +28,7 @@ format.
 ### Prerequisites
 
 - Python 3.11+
-- `promptsmith` library installed
+- `promptweaver` library installed
 - Ollama CLI installed and running (see [Ollama Installation](https://ollama.com/)
 - A Model pulled via Ollama (see [Model Compatibility](#model-compatibility))
 
@@ -38,9 +37,9 @@ format.
 To install the prerequisites, you can use the following commands:
 
 ```bash
-pip install promptsmith
+pip install promptweaver
 ollama serve
-ollama pull llama3:latest
+ollama pull {model_name} # whichever model you want to use
 ```
 
 ### Example Usage

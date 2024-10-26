@@ -4,11 +4,11 @@ import sys
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from promptsmith import LocalDataEngine, LocalEngineArguments
+from promptweaver import LocalDataEngine, LocalEngineArguments
 
 
 def main():
-    print("PromptSmith - Creative Writing Dataset Generation")
+    print("promptweaver - Creative Writing Dataset Generation")
     print("=====================================")
 
     # Initialize engine with creative writing-specific parameters

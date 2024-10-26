@@ -1,6 +1,6 @@
 import pytest
 
-from promptsmith import LocalDataEngine, LocalEngineArguments  # Updated import
+from promptweaver import LocalDataEngine, LocalEngineArguments  # Updated import
 
 
 def test_engine_initialization():
