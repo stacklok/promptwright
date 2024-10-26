@@ -41,16 +41,25 @@ class HFUploader:
             dataset.push_to_hub(hf_dataset_repo, token=self.hf_token)
 
         except RepositoryNotFoundError:
-            return {"status": "error", "message": f"Repository '{hf_dataset_repo}' not found. Please check your repository name."}
+            return {
+                "status": "error",
+                "message": f"Repository '{hf_dataset_repo}' not found. Please check your repository name.",
+            }
 
         except HfHubHTTPError as e:
             return {"status": "error", "message": f"Hugging Face Hub HTTP Error: {str(e)}"}
 
         except FileNotFoundError:
-            return {"status": "error", "message": f"File '{jsonl_file_path}' not found. Please check your file path."}
+            return {
+                "status": "error",
+                "message": f"File '{jsonl_file_path}' not found. Please check your file path.",
+            }
 
         except Exception as e:
             return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
 
         else:
-             return {"status": "success", "message": f"Dataset pushed successfully to {hf_dataset_repo}."}
+            return {
+                "status": "success",
+                "message": f"Dataset pushed successfully to {hf_dataset_repo}.",
+            }

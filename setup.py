@@ -21,7 +21,7 @@ setup(
             "requests-mock>=1.9.3",
             "mock>=4.0.0",
             "ruff>=0.0.0",
-            "datasets==3.0.2"
+            "datasets==3.0.2",
         ],
     },
     author="Luke Hinds",

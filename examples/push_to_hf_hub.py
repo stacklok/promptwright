@@ -11,7 +11,6 @@ def main():
     print("PromptSmith - Uploading to Hugging Face Hub")
     print("==========================================")
 
-
     dataset_file = "my_dataset.jsonl"
 
     # Upload the dataset to Hugging Face Hub
@@ -27,6 +26,7 @@ def main():
     # Push dataset to Hugging Face and print the status
     status = uploader.push_to_hub(hf_dataset_repo, jsonl_file_path)
     print(status)
+
 
 if __name__ == "__main__":
     main()
