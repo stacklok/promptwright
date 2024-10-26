@@ -17,6 +17,9 @@ jobs:
 
     environment: release  # Specify the environment
 
+    outputs:
+      github_token: ${{ secrets.ACTIONS_ID_TOKEN }} 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
