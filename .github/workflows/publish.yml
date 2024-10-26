@@ -39,7 +39,7 @@ jobs:
 
       - name: Publish using OIDC (Trusted Publisher)
         run: |
-          python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
+          python -m twine upload --repository-url pypi dist/*
         env:
           TWINE_USERNAME: "__token__"
           TWINE_PASSWORD: ${{ secrets.ACTIONS_ID_TOKEN }}
