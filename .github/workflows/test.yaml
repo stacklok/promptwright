@@ -46,17 +46,3 @@ jobs:
         ruff check .
         ruff format --check .
 
-  # Additional job for running longer tests or integration tests if needed
-  integration:
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-        cache: 'pip'
-
