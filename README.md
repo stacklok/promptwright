@@ -11,7 +11,7 @@ enabling users the ability to generate structured datasets.
 This was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
 in fact it started as fork, but ended up largley being a re-write, but with a
 focus on generating large datasets against a local LLM model, as opposed to OpenAI 
-where costs can be prohibitivly expensive.
+where costs can be prohibitively expensive.
 
 ## Features
 
@@ -52,11 +52,22 @@ To run the example:
 
 1. Ensure you have started Ollama by running `ollama serve`.
 2. Verify that the required model is downloaded (e.g. `llama3.2:latest`).
-3. Execute one of the available examples:
+4. Set the `model_name` in the chosen example file to the model you have downloaded.
 
+  ```python
+      engine = LocalDataEngine(
+        args=LocalEngineArguments(
+            instructions="Generate creative writing prompts and example responses.",
+            system_prompt="You are a creative writing instructor providing writing prompts and example responses.",
+            model_name="llama3.2:latest",
+            temperature=0.9,  # Higher temperature for more creative variations
+            max_retries=2,
+  ```
+5. Run the example file:
    ```bash
    python example/creative_writing.py
    ```
+6. The generated dataset will be saved to a JSONL file to whatever is set within  `dataset.save()`.
 
 ### Prompt Output Examples
 
