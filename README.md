@@ -1,12 +1,12 @@
-# promptweaver - Large Dataset Generation
+# promptwright - Large Dataset Generation
 
-[![Tests](https://github.com/StacklokLabs/promptweaver/actions/workflows/test.yml/badge.svg)](https://github.com/StacklokLabs/promptweaver/actions/workflows/test.yml)
-[![Python Version](https://img.shields.io/pypi/pyversions/promptweaver.svg)](https://pypi.org/project/promptweaver/)
+[![Tests](https://github.com/StacklokLabs/promptwright/actions/workflows/test.yml/badge.svg)](https://github.com/StacklokLabs/promptwright/actions/workflows/test.yml)
+[![Python Version](https://img.shields.io/pypi/pyversions/promptwright.svg)](https://pypi.org/project/promptwright/)
 
 
 <img src="image.png" width="350" height="350">
 
-promptweaver is a Python library from [Stacklok](https://stacklok.com) designed for generating large datasets using a local LLM via Ollama. The library offers a flexible and easy-to-use interface to
+promptwright is a Python library from [Stacklok](https://stacklok.com) designed for generating large datasets using a local LLM via Ollama. The library offers a flexible and easy-to-use interface to
 enabling users the ability to generate structured datasets.
 
 This was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
@@ -28,7 +28,7 @@ format.
 ### Prerequisites
 
 - Python 3.11+
-- `promptweaver` library installed
+- `promptwright` library installed
 - Ollama CLI installed and running (see [Ollama Installation](https://ollama.com/)
 - A Model pulled via Ollama (see [Model Compatibility](#model-compatibility))
 
@@ -37,7 +37,7 @@ format.
 To install the prerequisites, you can use the following commands:
 
 ```bash
-pip install promptweaver
+pip install promptwright
 ollama serve
 ollama pull {model_name} # whichever model you want to use
 ```

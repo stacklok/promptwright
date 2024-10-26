@@ -1,5 +1,5 @@
 [project]
-name = "promptweaver"
+name = "promptwright"
 version = "0.1.0"
 description = "A tool for generating and managing prompts for local LLMs using Ollama"
 requires-python = ">=3.11"
@@ -104,7 +104,7 @@ exclude = [
 "conftest.py" = ["S101"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["promptweaver"]
+known-first-party = ["promptwright"]
 lines-between-types = 1
 
 [tool.ruff.lint.pydocstyle]

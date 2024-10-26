@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 import requests
 
-from promptweaver import OllamaClient
+from promptwright import OllamaClient
 
 
 def test_ollama_client_initialization():

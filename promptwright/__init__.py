@@ -1,4 +1,4 @@
-# promptweaver/__init__.py
+# promptwright/__init__.py
 from .dataset import Dataset
 from .engine import LocalDataEngine, LocalEngineArguments
 from .hf_hub import HFUploader

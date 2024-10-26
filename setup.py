@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="promptweaver",
+    name="promptwright",
     version="0.1.0",
     packages=find_packages(),
     install_requires=[
@@ -29,7 +29,7 @@ setup(
     description="LLM based Synthetic Data Generation",
     long_description=open("README.md").read(),  # noqa: SIM115
     long_description_content_type="text/markdown",
-    url="https://github.com/StacklokLabs/promptweaver",
+    url="https://github.com/StacklokLabs/promptwright",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",

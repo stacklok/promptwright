@@ -2,7 +2,7 @@
 .PHONY: test test-all lint
 
 test:
-	pytest -v --cov=promptweaver --cov-report=xml
+	pytest -v --cov=promptwright --cov-report=xml
 
 test-all:
 	pytest -v

@@ -4,11 +4,11 @@ import sys
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from promptweaver import HFUploader
+from promptwright import HFUploader
 
 
 def main():
-    print("promptweaver - Uploading to Hugging Face Hub")
+    print("promptwright - Uploading to Hugging Face Hub")
     print("==========================================")
 
     dataset_file = "my_dataset.jsonl"
