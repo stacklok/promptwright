@@ -31,14 +31,6 @@ jobs:
     - name: Run tests with pytest
       run: |
         make test
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: true
         
     - name: Run style checks
       run: |

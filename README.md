@@ -1,7 +1,6 @@
 # PromptSmith - Large Dataset Generation
 
 [![Tests](https://github.com/StacklokLabs/promptsmith/actions/workflows/test.yml/badge.svg)](https://github.com/StacklokLabs/promptsmith/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/StacklokLabs/promptsmith/branch/main/graph/badge.svg)](https://codecov.io/gh/StacklokLabs/promptsmith)
 [![Python Version](https://img.shields.io/pypi/pyversions/promptsmith.svg)](https://pypi.org/project/promptsmith/)
 
 
