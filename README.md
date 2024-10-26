@@ -4,6 +4,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/promptwright.svg)](https://pypi.org/project/promptwright/)
 
 
+![alt text](image-1.png)
 <img src="image.png" width="350" height="350">
 
 promptwright is a Python library from [Stacklok](https://stacklok.com) designed for generating large datasets using a local LLM via Ollama. The library offers a flexible and easy-to-use interface to
