@@ -5,7 +5,7 @@ with open("README.md") as fh:
 
 setup(
     name="promptwright",
-    version="0.1.2",
+    version="0.1.3",
     packages=find_packages(),
     install_requires=[
         "certifi==2024.8.30",
