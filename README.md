@@ -1,4 +1,4 @@
-# promptwright - Large Dataset Generation
+# Promptwright - Synthetic Dataset Generation Library
 
 [![Tests](https://github.com/StacklokLabs/promptwright/actions/workflows/test.yml/badge.svg)](https://github.com/StacklokLabs/promptwright/actions/workflows/test.yml)
 [![Python Version](https://img.shields.io/pypi/pyversions/promptwright.svg)](https://pypi.org/project/promptwright/)
@@ -6,22 +6,21 @@
 <img src="https://github.com/StacklokLabs/promptwright/releases/download/0.0.0/image.png" width="350" height="350">
 
 
-promptwright is a Python library from [Stacklok](https://stacklok.com) designed for generating large datasets using a local LLM via Ollama. The library offers a flexible and easy-to-use interface to
-enabling users the ability to generate structured datasets.
+Promptwright is a Python library from [Stacklok](https://stacklok.com) designed for generating large synthetic 
+datasets using a local LLM. The library offers a flexible and easy-to-use set of interfaces, enabling users
+the ability to generate prompt led synthetic datasets.
 
-This was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
-in fact it started as fork, but ended up largley being a re-write, but with a
-focus on generating large datasets against a local LLM model, as opposed to OpenAI 
-where costs can be prohibitively expensive.
+Promptwright was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
+in fact it started as fork, but ended up largley being a re-write, to allow dataset generatiion
+against a local LLM model, as opposed to OpenAI where costs can be prohibitively expensive.
+
+The library interfaces with Ollama, making it easy to just pull a model and run Promptwright.
 
 ## Features
 
-- **Local LLM Client Integration**: interact with Ollama models using the `LocalDataEngine`.
-- **Test and Validate Connections**: Verify a connection with the LLM and ensure models are operational available before generating datasets.
-- **Configurable Instructions and Prompts**: Define custom instructions and system prompts to fine-tune the behavior of the LLM.
-- **Push to Hugging Face**: Push the generated dataset to Hugging Face in parquet
-format.
-
+- **Local LLM Client Integration**: Interact with Ollama based models
+- **Configurable Instructions and Prompts**: Define custom instructions and system prompts
+- **Push to Hugging Face**: Push the generated dataset to Hugging Face Hub.
 
 ## Getting Started
 
@@ -98,7 +97,7 @@ To run an example:
 - **Dataset**: A class for managing generated datasets.
 - **LocalDataEngine**: The main engine responsible for interacting with the LLM client and generating datasets.
 - **LocalEngineArguments**: A configuration class that defines the instructions, system prompt, model name temperature, retries, and prompt templates used for generating data.
-- **OllamaClient**: A client class for interacting with the Ollama API.
+- **OllamaClient**: A client class for interacting with the Ollama API
 - **HFUploader**: A utility class for uploading datasets to Hugging Face (pass in the path to the dataset and token).
 
 ### Troubleshooting
