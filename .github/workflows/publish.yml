@@ -1,9 +1,6 @@
 name: CI/CD
 
 on:
-  push:
-    branches:
-      - main
   release:
     types: [published]
 
