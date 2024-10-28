@@ -3,8 +3,7 @@
 [![Tests](https://github.com/StacklokLabs/promptwright/actions/workflows/test.yml/badge.svg)](https://github.com/StacklokLabs/promptwright/actions/workflows/test.yml)
 [![Python Version](https://img.shields.io/pypi/pyversions/promptwright.svg)](https://pypi.org/project/promptwright/)
 
-<img src="https://github.com/StacklokLabs/promptwright/releases/download/0.0.0/image.png" width="350" height="350">
-
+![promptwright-cover](https://github.com/user-attachments/assets/5e345bda-df66-474b-90e7-f488d8f89032)
 
 Promptwright is a Python library from [Stacklok](https://stacklok.com) designed for generating large synthetic 
 datasets using a local LLM. The library offers a flexible and easy-to-use set of interfaces, enabling users
