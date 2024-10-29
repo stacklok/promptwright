@@ -4,7 +4,8 @@ import random
 import re
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+import time
+from typing import TYPE_CHECKING, Any, List, Optional
 
 import litellm
 
@@ -16,7 +17,7 @@ from .topic_tree import TopicTree
 
 # Handle circular import for type hints
 if TYPE_CHECKING:
-    from .topic_tree import TopicTree
+    from .topic_tree import TopicTree  # noqa: F811
 
 
 def validate_json_response(json_str: str, schema: dict[str, Any] | None = None) -> dict | None:
@@ -77,7 +78,7 @@ class DataEngine:
         }
         self.args.system_prompt = ENGINE_JSON_INSTRUCTIONS + self.args.system_prompt
 
-    def analyze_failure(self, response_content: str, error: Exception = None) -> str:
+    def analyze_failure(self, response_content: str, error: Optional[Exception] = None) -> str:
         """Analyze the failure reason for a sample."""
         if error:
             error_str = str(error)
@@ -118,11 +119,11 @@ class DataEngine:
 
     def create_data(  # noqa: PLR0912
         self,
-        num_steps: int = None,
+        num_steps: Optional[int] = None,
         num_example_demonstrations: int = 3,
         batch_size: int = 10,
-        topic_tree: TopicTree = None,
-        model_name: str = None,
+        topic_tree: Optional[TopicTree] = None,
+        model_name: Optional[str] = None,
     ):
         if num_steps is None:
             raise ValueError("num_steps must be specified")  # noqa: TRY003
@@ -256,7 +257,7 @@ class DataEngine:
         self,
         data_creation_prompt: str,
         num_example_demonstrations: int,
-        subtopics_list: list[str] = None,
+        subtopics_list: Optional[List[str]] = None,
     ) -> str:
         prompt = data_creation_prompt.replace("{{{{system_prompt}}}}", self.build_system_prompt())
         prompt = prompt.replace("{{{{instructions}}}}", self.build_custom_instructions_text())
@@ -282,7 +283,7 @@ class DataEngine:
         examples_text += "\n".join(f"Example {i+1}: \n\n{ex}\n" for i, ex in enumerate(examples))
         return f"\nHere are output examples:\n<examples>\n{examples_text}\n</examples>\n"
 
-    def build_subtopics_text(self, subtopic_list: list[str]):
+    def build_subtopics_text(self, subtopic_list: Optional[List[str]]):
         if subtopic_list is None:
             return ""
         return f"\nLastly, the topic of the training data should be related to the following subtopics: {' -> '.join(subtopic_list)}"
@@ -290,3 +291,101 @@ class DataEngine:
     def save_dataset(self, save_path: str):
         """Save the dataset to a file."""
         self.dataset.save(save_path)
+
+    def create_questions(  # noqa: PLR0912
+        self,  # noqa: PLR0912
+        num_questions: int,
+    ) -> List[str]:
+        print("\nStarting generation:")
+        print(f"Target: {num_questions} questions")
+        print(f"Model: {self.args.model_name}")
+
+        start_time = time.time()
+        last_save_time = start_time
+        questions_list = []
+        success_count = 0
+
+        try:
+            with tqdm(total=num_questions, desc="Generating samples"):
+                consecutive_failures = 0
+
+                while success_count < num_questions:
+                    try:
+                        # Generate prompt
+                        prompt = self.build_prompt(
+                            SAMPLE_GENERATION_PROMPT,
+                            num_example_demonstrations=0,
+                            subtopics_list=[]
+                        )
+
+                        # Get model response with timeout
+                        responses = litellm.batch_completion(
+                            model=self.model_name,
+                            messages=[[{"role": "user", "content": prompt}]],
+                            temperature=self.args.temperature,
+                        )
+
+                        # Parse and validate
+                        samples = []
+                        for r in responses:
+                            response_content = r.choices[0].message.content
+                            parsed_json = validate_json_response(response_content)
+
+                            if parsed_json:
+                                samples.append(parsed_json)
+                            else:
+                                self.failed_samples.append(response_content)
+                                failure_type = self.analyze_failure(response_content)
+                                self.failure_analysis[failure_type].append(response_content)
+
+                    except Exception:
+                        consecutive_failures += 1
+
+                        if consecutive_failures >= 5:  # noqa: PLR2004
+                            print(
+                                f"\nToo many consecutive failures ({consecutive_failures}). Saving progress..."
+                            )
+                            print("Consider:")
+                            print("1. Checking Ollama status")
+                            print("2. Restarting Ollama")
+                            print("3. Using a different model")
+                            return questions_list
+
+                    # Save progress every 5 minutes or 10 successful samples
+                    current_time = time.time()
+                    if (current_time - last_save_time) > 300 or success_count % 10 == 0:  # noqa: PLR2004
+                        last_save_time = current_time
+
+                        # Show progress statistics
+                        elapsed = current_time - start_time
+                        rate = success_count / elapsed
+                        eta = (num_questions - success_count) / rate if rate > 0 else 0
+
+                        print("\nProgress update:")
+                        print(f"Samples generated: {success_count}/{num_questions}")
+                        print(f"Generation rate: {rate:.2f} samples/second")
+                        print(f"Estimated time remaining: {eta/60:.1f} minutes")
+
+        except KeyboardInterrupt:
+            print("\nGeneration interrupted by user.")
+            self.save_dataset("interrupted_dataset.jsonl")
+
+        except Exception as e:
+            print(f"\nUnexpected error: {str(e)}")
+            self.save_dataset("error_dataset.jsonl")
+            raise
+
+        finally:
+            # Save failure log if there were any failures
+            if self.failed_samples:
+                with open("generation_failures.json", "w") as f:
+                    json.dump(self.failed_samples, f, indent=2)
+
+        total_duration = time.time() - start_time
+        print("\nGeneration complete:")
+        print(f"Total samples: {success_count}/{num_questions}")
+        print(f"Success rate: {(success_count/num_questions)*100:.1f}%")
+        print(f"Total time: {total_duration/60:.1f} minutes")
+        print(f"Average speed: {success_count/total_duration:.2f} samples/second")
+
+        return questions_list

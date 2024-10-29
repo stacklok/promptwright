@@ -53,6 +53,34 @@ def test_create_data_success(mock_batch_completion, data_engine):
         )
     ] * 10  # Mock 10 responses to match the batch size
 
+
+@patch("promptwright.engine.litellm.batch_completion")
+def test_engine_create_questions(mock_batch_completion):
+    mock_batch_completion.return_value = [
+            MagicMock(
+                choices=[
+                    MagicMock(
+                        message=MagicMock(
+                            content='{"messages": [{"role": "user", "content": "example"}, {"role": "assistant", "content": "response"}]}'
+                        )
+                    )
+                ]
+            )
+        ] * 10
+    """Test create_questions method."""
+    args = EngineArguments(
+        instructions="Test instructions",
+        system_prompt="Test system prompt",
+        model_name="llama3:latest",
+    )
+
+    engine = DataEngine(args)
+
+    questions = engine.create_questions(num_questions=10)
+    assert len(questions) == 10
+
+
+def test_engine_validation(data_engine):
     topic_tree = MagicMock()
     topic_tree.tree_paths = [
         "path1",
@@ -71,7 +99,7 @@ def test_create_data_success(mock_batch_completion, data_engine):
     expected_num_samples = 10
 
     # Generate the data
-    dataset = data_engine.create_data(num_steps=1, batch_size=10, topic_tree=topic_tree)
+    dataset = data_engine.create_data(num_steps=1, batch_size=10, topic_tree=topic_tree)    
 
     # Assert that the dataset contains exactly the expected number of samples
     assert len(dataset.samples) == expected_num_samples
