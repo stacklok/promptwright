@@ -10,7 +10,7 @@ datasets using a local LLM. The library offers a flexible and easy-to-use set of
 the ability to generate prompt led synthetic datasets.
 
 Promptwright was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
-in fact it started as fork, but ended up largley being a re-write, to allow dataset generatiion
+in fact it started as fork, but ended up largley being a re-write, to allow dataset generation
 against a local LLM model, as opposed to OpenAI where costs can be prohibitively expensive.
 
 The library interfaces with Ollama, making it easy to just pull a model and run Promptwright.
