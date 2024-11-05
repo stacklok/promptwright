@@ -1,17 +1,37 @@
 import json
 import re
 
-
 class Dataset:
-    """A class to handle training datasets for local LLM fine-tuning.
-
-    This class manages collections of training samples, providing functionality
-    to load, save, validate, and manipulate the dataset.
     """
-
+    A class to represent a dataset consisting of samples, where each sample contains messages with specific roles.
+    Methods:
+        __init__():
+            Initialize an empty dataset.
+        from_jsonl(file_path: str) -> "Dataset":
+            Create a Dataset instance from a JSONL file.
+        from_list(sample_list: list[dict]) -> "Dataset":
+            Create a Dataset instance from a list of samples.
+        validate_sample(sample: dict) -> bool:
+            Validate if a sample has the correct format.
+        add_samples(samples: list[dict]) -> tuple[list[dict], list[str]]:
+            Add multiple samples to the dataset and return any failures.
+        remove_linebreaks_and_spaces(input_string: str) -> str:
+            Clean up a string by removing extra whitespace and normalizing linebreaks.
+        save(save_path: str):
+            Save the dataset to a JSONL file.
+        __len__() -> int:
+            Get the number of samples in the dataset.
+        __getitem__(idx: int) -> dict:
+            Get a sample from the dataset by index.
+        filter_by_role(role: str) -> list[dict]:
+            Filter samples to only include messages with a specific role.
+        get_statistics() -> dict:
+            Calculate basic statistics about the dataset.
+    """
     def __init__(self):
         """Initialize an empty dataset."""
         self.samples = []
+        self.failed_samples = []
 
     @classmethod
     def from_jsonl(cls, file_path: str) -> "Dataset":
@@ -30,7 +50,7 @@ class Dataset:
                 if cls.validate_sample(sample):
                     instance.samples.append(sample)
                 else:
-                    print(f"Warning: Invalid sample found and skipped: {sample}")
+                    instance.failed_samples.append(sample)
 
         return instance
 
@@ -49,7 +69,7 @@ class Dataset:
             if cls.validate_sample(sample):
                 instance.samples.append(sample)
             else:
-                print(f"Warning: Invalid sample skipped: {sample}")
+                instance.failed_samples.append(sample)
 
         return instance
 
@@ -78,17 +98,27 @@ class Dataset:
 
         return True
 
-    def add_samples(self, samples: list[dict]):
-        """Add multiple samples to the dataset.
+    def add_samples(self, samples: list[dict]) -> tuple[list[dict], list[str]]:
+        """Add multiple samples to the dataset and return any failures.
 
         Args:
             samples: List of dictionaries containing the samples to add.
+
+        Returns:
+            tuple: (list of failed samples, list of failure descriptions)
         """
+        failed_samples = []
+        failure_descriptions = []
+
         for sample in samples:
             if self.validate_sample(sample):
                 self.samples.append(sample)
             else:
-                print(f"Warning: Invalid sample, not added: {sample}")
+                failed_samples.append(sample)
+                failure_descriptions.append(f"Invalid sample format: {sample}")
+                self.failed_samples.append(sample)
+
+        return failed_samples, failure_descriptions
 
     @staticmethod
     def remove_linebreaks_and_spaces(input_string: str) -> str:
@@ -118,10 +148,6 @@ class Dataset:
                 f.write(clean_json + "\n")
 
         print(f"Saved dataset to {save_path}")
-        print("\nYou can now use this dataset for fine-tuning with various platforms:")
-        print("- Ollama: Use 'ollama create' with the dataset")
-        print("- LocalAI: Import directly into your local instance")
-        print("- Other platforms that support JSONL format for fine-tuning")
 
     def __len__(self) -> int:
         """Get the number of samples in the dataset.

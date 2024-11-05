@@ -1,15 +1,29 @@
-# uploader.py
-
 from datasets import load_dataset
 from huggingface_hub import login
 from huggingface_hub.utils import HfHubHTTPError, RepositoryNotFoundError
 
-
 class HFUploader:
     """
-    A class to handle uploading datasets in JSONL format to the Hugging Face Hub.
-    """
+    HFUploader is a class for uploading datasets to the Hugging Face Hub.
 
+    Methods
+    -------
+    __init__(hf_token)
+
+    push_to_hub(hf_dataset_repo, jsonl_file_path)
+
+        Parameters
+        ----------
+        hf_dataset_repo : str
+            The repository name in the format 'username/dataset_name'.
+        jsonl_file_path : str
+            Path to the JSONL file.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the status and a message.
+    """
     def __init__(self, hf_token):
         """
         Initialize the uploader with the Hugging Face authentication token.
@@ -31,13 +45,8 @@ class HFUploader:
         dict: A dictionary containing the status and a message.
         """
         try:
-            # Login to Hugging Face Hub
             login(token=self.hf_token)
-
-            # Load the dataset from the JSONL file
             dataset = load_dataset("json", data_files={"train": jsonl_file_path})
-
-            # Push the dataset to the Hugging Face Hub
             dataset.push_to_hub(hf_dataset_repo, token=self.hf_token)
 
         except RepositoryNotFoundError:

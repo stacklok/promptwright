@@ -1,0 +1,96 @@
+import ast
+import json
+import re
+
+
+def extract_list(input_string: str):
+    """
+    Extracts a Python list from a given input string.
+
+    This function attempts to parse the input string as JSON. If that fails,
+    it searches for the first Python list within the string by identifying
+    the opening and closing brackets. If a list is found, it is evaluated
+    safely to ensure it is a valid Python list.
+
+    Args:
+        input_string (str): The input string potentially containing a Python list.
+
+    Returns:
+        list: The extracted Python list if found and valid, otherwise an empty list.
+
+    Raises:
+        None: This function handles its own exceptions and does not raise any.
+    """
+    try:
+        return json.loads(input_string)
+    except json.JSONDecodeError:
+        print("Failed to parse the input string as JSON.")
+
+    start = input_string.find("[")
+    if start == -1:
+        print("No Python list found in the input string.")
+        return []
+
+    count = 0
+    for i, char in enumerate(input_string[start:]):
+        if char == "[":
+            count += 1
+        elif char == "]":
+            count -= 1
+        if count == 0:
+            end = i + start + 1
+            break
+    else:
+        print("No matching closing bracket found.")
+        return []
+
+    found_list_str = input_string[start:end]
+    found_list = safe_literal_eval(found_list_str)
+    if found_list is None:
+        print("Failed to parse the list due to syntax issues.")
+        return []
+
+    return found_list
+
+def remove_linebreaks_and_spaces(input_string):
+    """
+    Remove line breaks and extra spaces from the input string.
+
+    This function replaces all whitespace characters (including line breaks)
+    with a single space and then ensures that there are no consecutive spaces
+    in the resulting string.
+
+    Args:
+        input_string (str): The string from which to remove line breaks and extra spaces.
+
+    Returns:
+        str: The processed string with line breaks and extra spaces removed.
+    """
+    no_linebreaks = re.sub(r'\s+', ' ', input_string)
+    return ' '.join(no_linebreaks.split())
+
+def safe_literal_eval(list_string: str):
+    """
+    Safely evaluate a string containing a Python literal expression.
+
+    This function attempts to evaluate a string containing a Python literal
+    expression using `ast.literal_eval`. If a `SyntaxError` or `ValueError`
+    occurs, it tries to sanitize the string by replacing problematic apostrophes
+    with the actual right single quote character and attempts the evaluation again.
+
+    Args:
+        list_string (str): The string to be evaluated.
+
+    Returns:
+        The result of the evaluated string if successful, otherwise `None`.
+    """
+    try:
+        return ast.literal_eval(list_string)
+    except (SyntaxError, ValueError):
+        # Replace problematic apostrophes with the actual right single quote character
+        sanitized_string = re.sub(r"(\w)'(\w)", r"\1’\2", list_string)
+        try:
+            return ast.literal_eval(sanitized_string)
+        except (SyntaxError, ValueError):
+            print("Failed to parse the list due to syntax issues.")
+            return None

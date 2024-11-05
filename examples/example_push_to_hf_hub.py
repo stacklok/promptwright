@@ -9,7 +9,7 @@ from promptwright import HFUploader
 
 def main():
     print("promptwright - Uploading to Hugging Face Hub")
-    print("==========================================")
+    print("============================================")
 
     dataset_file = "my_dataset.jsonl"
 
