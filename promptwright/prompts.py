@@ -1,4 +1,4 @@
-SAMPLE_GENERATION_PROMPT ="""I want to train a large language model and you should help me generate training data for it. Here is the system prompt of the model that tells it what it should be able to do:
+SAMPLE_GENERATION_PROMPT = """I want to train a large language model and you should help me generate training data for it. Here is the system prompt of the model that tells it what it should be able to do:
 
 <system_prompt>
 {{{{system_prompt}}}}

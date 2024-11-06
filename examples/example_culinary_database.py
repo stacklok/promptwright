@@ -11,12 +11,12 @@ Your entries should be detailed, precise, and include both traditional and moder
 
 tree = TopicTree(
     args=TopicTreeArguments(
-        root_prompt="Global Cuisine and Cooking Techniques", # Root prompt for the tree
-        model_system_prompt=system_prompt, # System prompt for the model
+        root_prompt="Global Cuisine and Cooking Techniques",  # Root prompt for the tree
+        model_system_prompt=system_prompt,  # System prompt for the model
         tree_degree=5,  # Different cuisine types
-        tree_depth=3,   # Specific dishes and techniques
-        temperature=0.7, # Balanced temperature for creativity and precision
-        model_name="ollama/llama3" # Model name
+        tree_depth=3,  # Specific dishes and techniques
+        temperature=0.7,  # Balanced temperature for creativity and precision
+        model_name="ollama/llama3",  # Model name
     )
 )
 
@@ -31,17 +31,17 @@ engine = DataEngine(
                        - Critical technique explanations
                        - Common mistakes to avoid
                        - Storage and serving suggestions
-                       - Cultural context and history""", # Instructions for the model
-        system_prompt=system_prompt, # System prompt for the model
-        model_name="ollama/llama3", # Model name
+                       - Cultural context and history""",  # Instructions for the model
+        system_prompt=system_prompt,  # System prompt for the model
+        model_name="ollama/llama3",  # Model name
         temperature=0.1,  # Balance between creativity and precision
-        max_retries=3 # Retry failed prompts up to 3 times
+        max_retries=3,  # Retry failed prompts up to 3 times
     )
 )
 
 dataset = engine.create_data(
-    num_steps=15, # Generate 15 entries
-    batch_size=2, # Generate 2 entries at a time
+    num_steps=15,  # Generate 15 entries
+    batch_size=2,  # Generate 2 entries at a time
     topic_tree=tree,
 )
 

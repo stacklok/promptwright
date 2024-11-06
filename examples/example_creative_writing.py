@@ -15,7 +15,7 @@ tree = TopicTree(
         tree_degree=5,
         tree_depth=4,
         temperature=0.7,
-        model_name="ollama/llama3"
+        model_name="ollama/llama3",
     )
 )
 
@@ -25,11 +25,11 @@ tree.save("numpy_topictree.jsonl")
 # Initialize engine with creative writing-specific parameters
 engine = DataEngine(
     args=EngineArguments(
-        instructions="Generate creative writing prompts and example responses.", # Instructions for the model
-        system_prompt=system_prompt, # System prompt for the model
-        model_name="ollama/llama3", # Model name
-        temperature=0.7, # Higher temperature for creative writing
-        max_retries=3, # Retry failed prompts up to 3 times
+        instructions="Generate creative writing prompts and example responses.",  # Instructions for the model
+        system_prompt=system_prompt,  # System prompt for the model
+        model_name="ollama/llama3",  # Model name
+        temperature=0.7,  # Higher temperature for creative writing
+        max_retries=3,  # Retry failed prompts up to 3 times
     )
 )
 

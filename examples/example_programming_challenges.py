@@ -10,12 +10,12 @@ Each challenge should test specific programming concepts while remaining accessi
 
 tree = TopicTree(
     args=TopicTreeArguments(
-        root_prompt="Programming Challenges Across Different Difficulty Levels and Concepts", # Root prompt for the tree
-        model_system_prompt=system_prompt, # System prompt for the model
+        root_prompt="Programming Challenges Across Different Difficulty Levels and Concepts",  # Root prompt for the tree
+        model_system_prompt=system_prompt,  # System prompt for the model
         tree_degree=4,  # Different programming concepts
-        tree_depth=2,   # Various difficulty levels
-        temperature=0.7, # Higher temperature for creative problem scenarios
-        model_name="ollama/llama3" # Model name
+        tree_depth=2,  # Various difficulty levels
+        temperature=0.7,  # Higher temperature for creative problem scenarios
+        model_name="ollama/llama3",  # Model name
     )
 )
 
@@ -30,11 +30,11 @@ engine = DataEngine(
                        - Constraints and edge cases
                        - Hint system (progressive hints)
                        - Solution approach discussion
-                       - Time/Space complexity requirements""", # Instructions for the model
-        system_prompt=system_prompt, # System prompt for the model
-        model_name="ollama/llama3", # Model name
+                       - Time/Space complexity requirements""",  # Instructions for the model
+        system_prompt=system_prompt,  # System prompt for the model
+        model_name="ollama/llama3",  # Model name
         temperature=0.8,  # Higher temperature for creative problem scenarios
-        max_retries=3, # Retry failed generations up to 3 times
+        max_retries=3,  # Retry failed generations up to 3 times
     )
 )
 

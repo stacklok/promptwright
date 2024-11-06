@@ -13,9 +13,9 @@ tree = TopicTree(
         root_prompt="Notable Historical Figures Across Different Eras and Fields",
         model_system_prompt=system_prompt,
         tree_degree=4,  # More branches for different categories
-        tree_depth=3,   # Deeper tree for more specific figures
-        temperature=0.6, # Balanced temperature for creativity and accuracy
-        model_name="ollama/llama3" # Model name
+        tree_depth=3,  # Deeper tree for more specific figures
+        temperature=0.6,  # Balanced temperature for creativity and accuracy
+        model_name="ollama/llama3",  # Model name
     )
 )
 
@@ -26,10 +26,10 @@ engine = DataEngine(
     args=EngineArguments(
         instructions="""Generate biographical entries for historical figures.
                        Include lesser-known details and focus on their lasting impact.
-                       Each entry should be engaging while maintaining historical accuracy.""", # Instructions for the model
-        system_prompt=system_prompt, # System prompt for the model
-        model_name="ollama/llama3", # Model name
+                       Each entry should be engaging while maintaining historical accuracy.""",  # Instructions for the model
+        system_prompt=system_prompt,  # System prompt for the model
+        model_name="ollama/llama3",  # Model name
         temperature=0.7,  # Balance between creativity and accuracy
-        max_retries=3, # Retry failed generations up to 3 times
+        max_retries=3,  # Retry failed generations up to 3 times
     )
 )

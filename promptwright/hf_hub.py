@@ -25,6 +25,7 @@ class HFUploader:
         dict
             A dictionary containing the status and a message.
     """
+
     def __init__(self, hf_token):
         """
         Initialize the uploader with the Hugging Face authentication token.

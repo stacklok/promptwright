@@ -18,15 +18,16 @@ from .topic_tree import TopicTree
 if TYPE_CHECKING:
     from .topic_tree import TopicTree
 
+
 def validate_json_response(json_str: str, schema: dict[str, Any] | None = None) -> dict | None:
     """Validate and clean JSON response from LLM."""
     try:
-        json_match = re.search(r'(?s)\{.*\}', json_str)
+        json_match = re.search(r"(?s)\{.*\}", json_str)
         if not json_match:
             return None
 
         cleaned_json = json_match.group(0)
-        cleaned_json = re.sub(r'```json\s*|\s*```', '', cleaned_json)
+        cleaned_json = re.sub(r"```json\s*|\s*```", "", cleaned_json)
 
         parsed = json.loads(cleaned_json)
 
@@ -37,6 +38,7 @@ def validate_json_response(json_str: str, schema: dict[str, Any] | None = None) 
             return parsed
     except (json.JSONDecodeError, ValueError):
         return None
+
 
 @dataclass
 class EngineArguments:
@@ -51,9 +53,14 @@ class EngineArguments:
     default_num_examples: int = 3
     request_timeout: int = 30
 
+
 class DataEngine:
     def __init__(self, args: EngineArguments):
-        if not args.model_name or not isinstance(args.model_name, str) or not args.model_name.strip():
+        if (
+            not args.model_name
+            or not isinstance(args.model_name, str)
+            or not args.model_name.strip()
+        ):
             raise ValueError("model_name must be a non-empty string in EngineArguments")  # noqa: TRY003
 
         self.model_name = args.model_name.strip()  # Store model_name as instance variable
@@ -61,12 +68,12 @@ class DataEngine:
         self.dataset = Dataset()
         self.failed_samples = []
         self.failure_analysis = {
-            'json_parsing_errors': [],
-            'invalid_schema': [],
-            'api_errors': [],
-            'empty_responses': [],
-            'malformed_responses': [],
-            'other_errors': []
+            "json_parsing_errors": [],
+            "invalid_schema": [],
+            "api_errors": [],
+            "empty_responses": [],
+            "malformed_responses": [],
+            "other_errors": [],
         }
         self.args.system_prompt = ENGINE_JSON_INSTRUCTIONS + self.args.system_prompt
 
@@ -76,7 +83,9 @@ class DataEngine:
             error_str = str(error)
             if "schema" in error_str.lower():
                 return "invalid_schema"
-            if any(api_err in error_str.lower() for api_err in ["timeout", "rate limit", "connection"]):
+            if any(
+                api_err in error_str.lower() for api_err in ["timeout", "rate limit", "connection"]
+            ):
                 return "api_errors"
             return "other_errors"
 
@@ -91,9 +100,9 @@ class DataEngine:
     def summarize_failures(self) -> dict:
         """Generate a summary of all failures."""
         summary = {
-            'total_failures': len(self.failed_samples),
-            'failure_types': {k: len(v) for k, v in self.failure_analysis.items()},
-            'failure_examples': {}
+            "total_failures": len(self.failed_samples),
+            "failure_types": {k: len(v) for k, v in self.failure_analysis.items()},
+            "failure_examples": {},
         }
 
         # Add example failures for each category
@@ -101,7 +110,7 @@ class DataEngine:
             if failures:
                 # Get up to 3 examples for each category
                 examples = failures[:3]
-                summary['failure_examples'][category] = [
+                summary["failure_examples"][category] = [
                     str(ex)[:200] + "..." if len(str(ex)) > 200 else str(ex)  # noqa: PLR2004
                     for ex in examples
                 ]
@@ -113,7 +122,7 @@ class DataEngine:
         num_example_demonstrations: int = 3,
         batch_size: int = 10,
         topic_tree: TopicTree = None,
-        model_name: str = None
+        model_name: str = None,
     ):
         if num_steps is None:
             raise ValueError("num_steps must be specified")  # noqa: TRY003
@@ -133,7 +142,9 @@ class DataEngine:
             required_samples = num_steps * batch_size
 
             if required_samples > total_paths:
-                raise ValueError(f"Required samples ({required_samples}) exceeds available tree paths ({total_paths})")  # noqa: TRY003
+                raise ValueError(
+                    f"Required samples ({required_samples}) exceeds available tree paths ({total_paths})"
+                )  # noqa: TRY003
 
             tree_paths = random.sample(tree_paths, required_samples)
             num_steps = math.ceil(len(tree_paths) / batch_size)
@@ -163,7 +174,7 @@ class DataEngine:
                         sample_prompt = self.build_prompt(
                             data_creation_prompt=data_creation_prompt,
                             num_example_demonstrations=num_example_demonstrations,
-                            subtopics_list=path
+                            subtopics_list=path,
                         )
                         prompts.append(sample_prompt)
 
@@ -188,11 +199,15 @@ class DataEngine:
                                     self.failure_analysis[failure_type].append(response_content)
 
                             if samples:
-                                failed_samples, failure_descriptions = self.dataset.add_samples(samples)
+                                failed_samples, failure_descriptions = self.dataset.add_samples(
+                                    samples
+                                )
                                 if failed_samples:
-                                    for sample, desc in zip(failed_samples, failure_descriptions, strict=True):
+                                    for sample, desc in zip(
+                                        failed_samples, failure_descriptions, strict=True
+                                    ):
                                         self.failed_samples.append(sample)
-                                        self.failure_analysis['invalid_schema'].append(desc)
+                                        self.failure_analysis["invalid_schema"].append(desc)
                                 pbar.update(len(samples) - len(failed_samples))
                                 break  # Success - exit retry loop
 
@@ -228,19 +243,26 @@ class DataEngine:
         print("\n=== Failure Analysis Summary ===")
         print(f"Total Failed Samples: {summary['total_failures']}")
         print("\nFailure Types Breakdown:")
-        for failure_type, count in summary['failure_types'].items():
+        for failure_type, count in summary["failure_types"].items():
             if count > 0:
                 print(f"\n{failure_type.replace('_', ' ').title()}: {count}")
-                if failure_type in summary['failure_examples']:
+                if failure_type in summary["failure_examples"]:
                     print("Example failures:")
-                    for i, example in enumerate(summary['failure_examples'][failure_type], 1):
+                    for i, example in enumerate(summary["failure_examples"][failure_type], 1):
                         print(f"  {i}. {example}")
         print("\n=============================")
 
-    def build_prompt(self, data_creation_prompt: str, num_example_demonstrations: int, subtopics_list: list[str] = None) -> str:
+    def build_prompt(
+        self,
+        data_creation_prompt: str,
+        num_example_demonstrations: int,
+        subtopics_list: list[str] = None,
+    ) -> str:
         prompt = data_creation_prompt.replace("{{{{system_prompt}}}}", self.build_system_prompt())
         prompt = prompt.replace("{{{{instructions}}}}", self.build_custom_instructions_text())
-        prompt = prompt.replace("{{{{examples}}}}", self.build_examples_text(num_example_demonstrations))
+        prompt = prompt.replace(
+            "{{{{examples}}}}", self.build_examples_text(num_example_demonstrations)
+        )
         return prompt.replace("{{{{subtopics}}}}", self.build_subtopics_text(subtopics_list))
 
     def build_system_prompt(self):
@@ -257,8 +279,7 @@ class DataEngine:
 
         examples = random.sample(self.args.example_data.samples, num_example_demonstrations)
         examples_text = "Here are output examples:\n\n"
-        examples_text += "\n".join(f"Example {i+1}: \n\n{ex}\n"
-                                 for i, ex in enumerate(examples))
+        examples_text += "\n".join(f"Example {i+1}: \n\n{ex}\n" for i, ex in enumerate(examples))
         return f"\nHere are output examples:\n<examples>\n{examples_text}\n</examples>\n"
 
     def build_subtopics_text(self, subtopic_list: list[str]):

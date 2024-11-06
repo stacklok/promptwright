@@ -52,6 +52,7 @@ def extract_list(input_string: str):
 
     return found_list
 
+
 def remove_linebreaks_and_spaces(input_string):
     """
     Remove line breaks and extra spaces from the input string.
@@ -66,8 +67,9 @@ def remove_linebreaks_and_spaces(input_string):
     Returns:
         str: The processed string with line breaks and extra spaces removed.
     """
-    no_linebreaks = re.sub(r'\s+', ' ', input_string)
-    return ' '.join(no_linebreaks.split())
+    no_linebreaks = re.sub(r"\s+", " ", input_string)
+    return " ".join(no_linebreaks.split())
+
 
 def safe_literal_eval(list_string: str):
     """

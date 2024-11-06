@@ -13,15 +13,16 @@ from .utils import extract_list
 
 warnings.filterwarnings("ignore", message="Pydantic serializer warnings:.*")
 
+
 def validate_and_clean_response(response_text: str) -> str | list[str] | None:
     """Clean and validate the response from the LLM."""
     try:
         # First try to extract a JSON array if present
-        json_match = re.search(r'\[.*\]', response_text, re.DOTALL)
+        json_match = re.search(r"\[.*\]", response_text, re.DOTALL)
         if json_match:
             cleaned_json = json_match.group(0)
             # Remove any markdown code block markers
-            cleaned_json = re.sub(r'```json\s*|\s*```', '', cleaned_json)
+            cleaned_json = re.sub(r"```json\s*|\s*```", "", cleaned_json)
             return json.loads(cleaned_json)
 
         # If no JSON array found, fall back to extract_list
@@ -32,6 +33,7 @@ def validate_and_clean_response(response_text: str) -> str | list[str] | None:
     except (json.JSONDecodeError, ValueError) as e:
         print(f"Error parsing response: {str(e)}")
         return None
+
 
 @dataclass
 class TopicTreeArguments:
@@ -45,6 +47,7 @@ class TopicTreeArguments:
         tree_depth (int): The depth of the tree.
         model_name (str): The name of the model to be used.
     """
+
     root_prompt: str
     model_system_prompt: str = ""
     tree_degree: int = 10
@@ -52,17 +55,19 @@ class TopicTreeArguments:
     model_name: str = "ollama/llama3"
     temperature: float = 0.2
 
+
 class TopicTreeValidator:
     """
     TopicTreeValidator validates and calculates unique paths in a tree structure.
     """
+
     def __init__(self, tree_degree: int, tree_depth: int):
         self.tree_degree = tree_degree
         self.tree_depth = tree_depth
 
     def calculate_paths(self) -> int:
         """Calculate total number of paths in the tree."""
-        return self.tree_degree ** self.tree_depth
+        return self.tree_degree**self.tree_depth
 
     def validate_configuration(self, num_steps: int, batch_size: int) -> dict[str, Any]:
         """Validates tree configuration and provides recommendations if invalid."""
@@ -79,7 +84,7 @@ class TopicTreeValidator:
                 "suggested_num_steps": total_tree_paths // batch_size,
                 "suggested_batch_size": total_tree_paths // num_steps,
                 "total_tree_paths": total_tree_paths,
-                "total_requested_paths": total_requested_paths
+                "total_requested_paths": total_requested_paths,
             }
             print("Recommended configurations to fit within the tree paths:")
             print(f" - Reduce num_steps to: {recommendation['suggested_num_steps']} or")
@@ -90,11 +95,13 @@ class TopicTreeValidator:
         return {
             "valid": True,
             "total_tree_paths": total_tree_paths,
-            "total_requested_paths": total_requested_paths
+            "total_requested_paths": total_requested_paths,
         }
+
 
 class TopicTree:
     """A class to represent and build a hierarchical topic tree."""
+
     def __init__(self, args: TopicTreeArguments):
         """Initialize the TopicTree with the given arguments."""
         if not args.model_name:
@@ -123,7 +130,7 @@ class TopicTree:
                 self.system_prompt,
                 self.args.tree_degree,
                 self.args.tree_depth,
-                model_name=self.model_name
+                model_name=self.model_name,
             )
 
             print(f"Tree building complete. Generated {len(self.tree_paths)} paths.")
@@ -137,13 +144,15 @@ class TopicTree:
                 self.save("partial_tree.jsonl")
             raise
 
-    def get_subtopics(self, system_prompt: str, node_path: list[str], num_subtopics: int) -> list[str]:
+    def get_subtopics(
+        self, system_prompt: str, node_path: list[str], num_subtopics: int
+    ) -> list[str]:
         """Generate subtopics with improved error handling and validation."""
         print(f"Generating {num_subtopics} subtopics for: {' -> '.join(node_path)}")
 
         prompt = TREE_GENERATION_PROMPT
         prompt = prompt.replace("{{{{system_prompt}}}}", system_prompt if system_prompt else "")
-        prompt = prompt.replace("{{{{subtopics_list}}}}", ' -> '.join(node_path))
+        prompt = prompt.replace("{{{{subtopics_list}}}}", " -> ".join(node_path))
         prompt = prompt.replace("{{{{num_subtopics}}}}", str(num_subtopics))
 
         max_retries = 3
@@ -157,7 +166,7 @@ class TopicTree:
                     max_tokens=1000,
                     temperature=self.temperature,
                     base_url="http://localhost:11434",
-                    messages=[{"role": "user", "content": prompt}]
+                    messages=[{"role": "user", "content": prompt}],
                 )
 
                 subtopics = validate_and_clean_response(response.choices[0].message.content)
@@ -180,25 +189,32 @@ class TopicTree:
 
             except Exception as e:
                 last_error = str(e)
-                print(f"Error generating subtopics (attempt {retries + 1}/{max_retries}): {last_error}")
+                print(
+                    f"Error generating subtopics (attempt {retries + 1}/{max_retries}): {last_error}"
+                )
 
             retries += 1
             if retries < max_retries:
-                time.sleep(2 ** retries)  # Exponential backoff
+                time.sleep(2**retries)  # Exponential backoff
 
         # If all retries failed, generate default subtopics and log the failure
         default_subtopics = [f"subtopic_{i+1}_for_{node_path[-1]}" for i in range(num_subtopics)]
-        self.failed_generations.append({
-            "path": node_path,
-            "attempts": retries,
-            "last_error": last_error
-        })
-        print(f"Failed to generate valid subtopics after {max_retries} attempts. Using default subtopics.")
+        self.failed_generations.append(
+            {"path": node_path, "attempts": retries, "last_error": last_error}
+        )
+        print(
+            f"Failed to generate valid subtopics after {max_retries} attempts. Using default subtopics."
+        )
         return default_subtopics
 
-    def build_subtree(self, node_path: list[str], system_prompt: str,
-                     tree_degree: int, subtree_depth: int,
-                     model_name: str) -> list[list[str]]:
+    def build_subtree(
+        self,
+        node_path: list[str],
+        system_prompt: str,
+        tree_degree: int,
+        subtree_depth: int,
+        model_name: str,
+    ) -> list[list[str]]:
         """Build a subtree with improved error handling and validation."""
         # Convert any non-string elements to strings
         node_path = [str(node) if not isinstance(node, str) else node for node in node_path]
@@ -225,9 +241,11 @@ class TopicTree:
         for subnode in cleaned_subnodes:
             try:
                 new_path = node_path + [subnode]
-                result.extend(self.build_subtree(
-                    new_path, system_prompt, tree_degree, subtree_depth-1, model_name
-                ))
+                result.extend(
+                    self.build_subtree(
+                        new_path, system_prompt, tree_degree, subtree_depth - 1, model_name
+                    )
+                )
             except Exception as e:
                 print(f"Error building subtree for {subnode}: {str(e)}")
                 continue

@@ -17,12 +17,14 @@ def engine_args():
         max_retries=3,
         default_batch_size=5,
         default_num_examples=3,
-        request_timeout=30
+        request_timeout=30,
     )
+
 
 @pytest.fixture
 def data_engine(engine_args):
     return DataEngine(engine_args)
+
 
 def test_engine_initialization(engine_args):
     engine = DataEngine(engine_args)
@@ -30,19 +32,40 @@ def test_engine_initialization(engine_args):
     assert isinstance(engine.dataset, Dataset)
     assert engine.failed_samples == []
 
+
 def test_create_data_no_steps(data_engine):
     with pytest.raises(ValueError, match="num_steps must be specified"):
         data_engine.create_data()
 
-@patch('promptwright.engine.litellm.batch_completion')
+
+@patch("promptwright.engine.litellm.batch_completion")
 def test_create_data_success(mock_batch_completion, data_engine):
     # Mock valid JSON responses to match the expected structure for 10 samples
     mock_batch_completion.return_value = [
-        MagicMock(choices=[MagicMock(message=MagicMock(content='{"messages": [{"role": "user", "content": "example"}, {"role": "assistant", "content": "response"}]}'))])
+        MagicMock(
+            choices=[
+                MagicMock(
+                    message=MagicMock(
+                        content='{"messages": [{"role": "user", "content": "example"}, {"role": "assistant", "content": "response"}]}'
+                    )
+                )
+            ]
+        )
     ] * 10  # Mock 10 responses to match the batch size
 
     topic_tree = MagicMock()
-    topic_tree.tree_paths = ["path1", "path2", "path3", "path4", "path5", "path6", "path7", "path8", "path9", "path10"]
+    topic_tree.tree_paths = [
+        "path1",
+        "path2",
+        "path3",
+        "path4",
+        "path5",
+        "path6",
+        "path7",
+        "path8",
+        "path9",
+        "path10",
+    ]
 
     # Define a constant for the expected number of samples
     expected_num_samples = 10
@@ -61,24 +84,29 @@ def test_build_prompt(data_engine):
     assert "{{examples}}" not in prompt
     assert "{{subtopics}}" not in prompt
 
+
 def test_build_system_prompt(data_engine):
     system_prompt = data_engine.build_system_prompt()
     assert system_prompt == data_engine.args.system_prompt
+
 
 def test_build_custom_instructions_text(data_engine):
     instructions_text = data_engine.build_custom_instructions_text()
     assert "<instructions>" in instructions_text
     assert data_engine.args.instructions in instructions_text
 
+
 def test_build_examples_text_no_examples(data_engine):
     examples_text = data_engine.build_examples_text(3)
     assert examples_text == ""
+
 
 def test_build_subtopics_text(data_engine):
     subtopics_text = data_engine.build_subtopics_text(["subtopic1", "subtopic2"])
     assert "subtopic1 -> subtopic2" in subtopics_text
 
-@patch.object(Dataset, 'save')
+
+@patch.object(Dataset, "save")
 def test_save_dataset(mock_save, data_engine):
     data_engine.save_dataset("test_path.jsonl")
     mock_save.assert_called_once_with("test_path.jsonl")
