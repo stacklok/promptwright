@@ -1,4 +1,4 @@
-certifi==2024.8.30
+certifi==2023.11.17  # Changed to be compatible with litellm's requirement
 charset-normalizer==3.4.0
 idna==3.10
 requests==2.32.3

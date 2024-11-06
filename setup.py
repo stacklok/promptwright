@@ -8,7 +8,7 @@ setup(
     version="0.1.5",
     packages=find_packages(),
     install_requires=[
-        "certifi==2024.8.30",
+        "certifi>=2023.7.22,<2024.0.0",  # Updated to be compatible with litellm
         "charset-normalizer==3.4.0",
         "idna==3.10",
         "requests==2.32.3",
