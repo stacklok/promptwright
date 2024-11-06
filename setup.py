@@ -16,6 +16,7 @@ setup(
         "urllib3==2.2.3",
         "huggingface-hub==0.26.0",
         "datasets==3.0.2",
+        "litellm==1.7.12",
     ],
     extras_require={
         "dev": [
