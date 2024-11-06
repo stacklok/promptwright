@@ -1,6 +1,7 @@
 import json
 import re
 
+
 class Dataset:
     """
     A class to represent a dataset consisting of samples, where each sample contains messages with specific roles.

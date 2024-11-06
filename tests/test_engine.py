@@ -1,7 +1,9 @@
-import pytest
 from unittest.mock import MagicMock, patch
-import re
-from promptwright.engine import DataEngine, EngineArguments, Dataset, TopicTree
+
+import pytest
+
+from promptwright.engine import DataEngine, Dataset, EngineArguments
+
 
 @pytest.fixture
 def engine_args():

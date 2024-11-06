@@ -28,8 +28,7 @@ def validate_and_clean_response(response_text: str) -> str | list[str] | None:
         topics = extract_list(response_text)
         if topics:
             return [topic.strip() for topic in topics if topic.strip()]
-
-        return None
+        return None  # noqa: TRY300
     except (json.JSONDecodeError, ValueError) as e:
         print(f"Error parsing response: {str(e)}")
         return None
