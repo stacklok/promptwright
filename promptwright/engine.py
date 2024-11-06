@@ -142,7 +142,7 @@ class DataEngine:
             required_samples = num_steps * batch_size
 
             if required_samples > total_paths:
-                raise ValueError(
+                raise ValueError(  # noqa: TRY003
                     f"Required samples ({required_samples}) exceeds available tree paths ({total_paths})"
                 )  # noqa: TRY003
 
