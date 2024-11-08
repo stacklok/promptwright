@@ -8,7 +8,7 @@ setup(
     version="1.0.0",
     packages=find_packages(),
     install_requires=[
-        "certifi>=2023.7.22,<2024.0.0",  # Updated to be compatible with litellm
+        "certifi==2024.7.4",  # Updated to be compatible with litellm
         "charset-normalizer==3.4.0",
         "idna==3.10",
         "requests==2.32.3",
@@ -16,7 +16,7 @@ setup(
         "urllib3==2.2.3",
         "huggingface-hub==0.26.0",
         "datasets==3.0.2",
-        "litellm==1.7.12",
+        "litellm==1.52.1",
     ],
     extras_require={
         "dev": [
