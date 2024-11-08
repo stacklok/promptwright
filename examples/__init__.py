@@ -1,3 +1,3 @@
-from . import coding, creative_writing, science
+from . import example_coding, example_creative_writing, example_science
 
-__all__ = ["coding", "creative_writing", "science"]
+__all__ = ["example_coding", "example_creative_writing", "example_science"]
