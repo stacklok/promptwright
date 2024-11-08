@@ -176,7 +176,7 @@ class DataEngine:
                             data_creation_prompt=data_creation_prompt,
                             num_example_demonstrations=num_example_demonstrations,
                             subtopics_list=path,
-                        )
+                        )                        
                         prompts.append(sample_prompt)
 
                     for attempt in range(self.args.max_retries):
@@ -188,6 +188,7 @@ class DataEngine:
                             )
 
                             samples = []
+                            print(responses)
                             for r in responses:
                                 response_content = r.choices[0].message.content
                                 parsed_json = validate_json_response(response_content)
@@ -326,13 +327,13 @@ class DataEngine:
                         )
 
                         # Parse and validate
-                        samples = []
                         for r in responses:
                             response_content = r.choices[0].message.content
                             parsed_json = validate_json_response(response_content)
 
                             if parsed_json:
-                                samples.append(parsed_json)
+                                questions_list.append(parsed_json)
+                                success_count += 1
                             else:
                                 self.failed_samples.append(response_content)
                                 failure_type = self.analyze_failure(response_content)
@@ -368,18 +369,9 @@ class DataEngine:
 
         except KeyboardInterrupt:
             print("\nGeneration interrupted by user.")
-            self.save_dataset("interrupted_dataset.jsonl")
-
         except Exception as e:
             print(f"\nUnexpected error: {str(e)}")
-            self.save_dataset("error_dataset.jsonl")
             raise
-
-        finally:
-            # Save failure log if there were any failures
-            if self.failed_samples:
-                with open("generation_failures.json", "w") as f:
-                    json.dump(self.failed_samples, f, indent=2)
 
         total_duration = time.time() - start_time
         print("\nGeneration complete:")

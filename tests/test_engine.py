@@ -39,7 +39,7 @@ def test_create_data_no_steps(data_engine):
 
 
 @patch("promptwright.engine.litellm.batch_completion")
-def test_create_data_success(mock_batch_completion, data_engine):
+def test_create_data_success(mock_batch_completion):
     # Mock valid JSON responses to match the expected structure for 10 samples
     mock_batch_completion.return_value = [
         MagicMock(
@@ -80,7 +80,20 @@ def test_engine_create_questions(mock_batch_completion):
     assert len(questions) == 10
 
 
-def test_engine_validation(data_engine):
+@patch("promptwright.engine.litellm.batch_completion")
+def test_engine_validation(mock_batch_completion, data_engine):
+    mock_batch_completion.return_value = [
+            MagicMock(
+                choices=[
+                    MagicMock(
+                        message=MagicMock(
+                            content='{"messages": [{"role": "user", "content": "example"}, {"role": "assistant", "content": "response"}]}'
+                        )
+                    )
+                ]
+            )
+        ] * 10
+
     topic_tree = MagicMock()
     topic_tree.tree_paths = [
         "path1",
@@ -99,7 +112,7 @@ def test_engine_validation(data_engine):
     expected_num_samples = 10
 
     # Generate the data
-    dataset = data_engine.create_data(num_steps=1, batch_size=10, topic_tree=topic_tree)    
+    dataset = data_engine.create_data(num_steps=1, batch_size=10, topic_tree=topic_tree)
 
     # Assert that the dataset contains exactly the expected number of samples
     assert len(dataset.samples) == expected_num_samples
