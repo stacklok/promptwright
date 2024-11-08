@@ -1,6 +1,6 @@
 [project]
 name = "promptwright"
-version = "1.0.0"
+version = "1.0.1"
 description = "A tool for generating and managing prompts for local LLMs using Ollama"
 readme = "README.md"
 requires-python = ">=3.11"
