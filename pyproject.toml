@@ -1,6 +1,6 @@
 [project]
 name = "promptwright"
-version = "0.1.5"
+version = "1.0.0"
 description = "A tool for generating and managing prompts for local LLMs using Ollama"
 long_description = "file: README.md"
 readme = "README.md"

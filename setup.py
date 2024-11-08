@@ -5,7 +5,7 @@ with open("README.md") as fh:
 
 setup(
     name="promptwright",
-    version="0.1.5",
+    version="1.0.0",
     packages=find_packages(),
     install_requires=[
         "certifi>=2023.7.22,<2024.0.0",  # Updated to be compatible with litellm
