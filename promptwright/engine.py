@@ -2,17 +2,17 @@ import json
 import math
 import random
 import re
+import time
 
 from dataclasses import dataclass
-import time
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any
 
 import litellm
 
 from tqdm import tqdm
 
 from .dataset import Dataset
-from .prompts import ENGINE_JSON_INSTRUCTIONS, SAMPLE_GENERATION_PROMPT
+from .prompts import ENGINE_JSON_INSTRUCTIONS, SAMPLE_GENERATION_PROMPT, SAMPLE_QUESTIONS_PROMPT
 from .topic_tree import TopicTree
 
 # Handle circular import for type hints
@@ -31,7 +31,6 @@ def validate_json_response(json_str: str, schema: dict[str, Any] | None = None) 
         cleaned_json = re.sub(r"```json\s*|\s*```", "", cleaned_json)
 
         parsed = json.loads(cleaned_json)
-
         if schema is not None:
             # Schema validation could be added here
             pass
@@ -39,6 +38,23 @@ def validate_json_response(json_str: str, schema: dict[str, Any] | None = None) 
             return parsed
     except (json.JSONDecodeError, ValueError):
         return None
+
+
+def validate_json_response_questions(json_str: str) -> list[dict] | None:
+    """Validate and clean JSON response from LLM."""
+    try:
+        regex_pattern = r"\{\n\s+\"messages\": \[\n(?:.*?\n)+?\s+\]\n\}"
+        matches = re.finditer(regex_pattern, json_str, re.DOTALL)
+        items = []
+        for item in matches:
+            json_response = validate_json_response(item.group())
+            if json_response:
+                message = json_response.get("messages", [])
+                items.append(message)
+    except (json.JSONDecodeError, ValueError):
+        return None
+    else:
+        return items if items else None
 
 
 @dataclass
@@ -78,7 +94,7 @@ class DataEngine:
         }
         self.args.system_prompt = ENGINE_JSON_INSTRUCTIONS + self.args.system_prompt
 
-    def analyze_failure(self, response_content: str, error: Optional[Exception] = None) -> str:
+    def analyze_failure(self, response_content: str, error: Exception | None = None) -> str:
         """Analyze the failure reason for a sample."""
         if error:
             error_str = str(error)
@@ -119,11 +135,11 @@ class DataEngine:
 
     def create_data(  # noqa: PLR0912
         self,
-        num_steps: Optional[int] = None,
+        num_steps: int | None = None,
         num_example_demonstrations: int = 3,
         batch_size: int = 10,
-        topic_tree: Optional[TopicTree] = None,
-        model_name: Optional[str] = None,
+        topic_tree: TopicTree | None = None,
+        model_name: str | None = None,
     ):
         if num_steps is None:
             raise ValueError("num_steps must be specified")  # noqa: TRY003
@@ -176,13 +192,14 @@ class DataEngine:
                             data_creation_prompt=data_creation_prompt,
                             num_example_demonstrations=num_example_demonstrations,
                             subtopics_list=path,
-                        )                        
+                        )
                         prompts.append(sample_prompt)
 
                     for attempt in range(self.args.max_retries):
                         try:
                             responses = litellm.batch_completion(
                                 model=self.model_name,
+                                base_url="http://localhost:11434",
                                 messages=[[{"role": "user", "content": p}] for p in prompts],
                                 temperature=self.args.temperature,
                             )
@@ -258,7 +275,7 @@ class DataEngine:
         self,
         data_creation_prompt: str,
         num_example_demonstrations: int,
-        subtopics_list: Optional[List[str]] = None,
+        subtopics_list: list[str] | None = None,
     ) -> str:
         prompt = data_creation_prompt.replace("{{{{system_prompt}}}}", self.build_system_prompt())
         prompt = prompt.replace("{{{{instructions}}}}", self.build_custom_instructions_text())
@@ -266,6 +283,15 @@ class DataEngine:
             "{{{{examples}}}}", self.build_examples_text(num_example_demonstrations)
         )
         return prompt.replace("{{{{subtopics}}}}", self.build_subtopics_text(subtopics_list))
+
+    def build_questions_prompt(
+        self,
+        data_creation_prompt: str,
+        num_questions: int,
+    ) -> str:
+        prompt = data_creation_prompt.replace("{{{{system_prompt}}}}", self.build_system_prompt())
+        prompt = prompt.replace("{{{{instructions}}}}", self.build_custom_instructions_text())
+        return prompt.replace("{{{{num_questions}}}}", str(num_questions))
 
     def build_system_prompt(self):
         return self.args.system_prompt
@@ -284,7 +310,7 @@ class DataEngine:
         examples_text += "\n".join(f"Example {i+1}: \n\n{ex}\n" for i, ex in enumerate(examples))
         return f"\nHere are output examples:\n<examples>\n{examples_text}\n</examples>\n"
 
-    def build_subtopics_text(self, subtopic_list: Optional[List[str]]):
+    def build_subtopics_text(self, subtopic_list: list[str] | None):
         if subtopic_list is None:
             return ""
         return f"\nLastly, the topic of the training data should be related to the following subtopics: {' -> '.join(subtopic_list)}"
@@ -296,7 +322,7 @@ class DataEngine:
     def create_questions(  # noqa: PLR0912
         self,  # noqa: PLR0912
         num_questions: int,
-    ) -> List[str]:
+    ) -> list[str]:
         print("\nStarting generation:")
         print(f"Target: {num_questions} questions")
         print(f"Model: {self.args.model_name}")
@@ -305,7 +331,6 @@ class DataEngine:
         last_save_time = start_time
         questions_list = []
         success_count = 0
-
         try:
             with tqdm(total=num_questions, desc="Generating samples"):
                 consecutive_failures = 0
@@ -313,15 +338,15 @@ class DataEngine:
                 while success_count < num_questions:
                     try:
                         # Generate prompt
-                        prompt = self.build_prompt(
-                            SAMPLE_GENERATION_PROMPT,
-                            num_example_demonstrations=0,
-                            subtopics_list=[]
+                        prompt = self.build_questions_prompt(
+                            SAMPLE_QUESTIONS_PROMPT,
+                            num_questions=num_questions,
                         )
 
                         # Get model response with timeout
                         responses = litellm.batch_completion(
                             model=self.model_name,
+                            base_url="http://localhost:11434",
                             messages=[[{"role": "user", "content": prompt}]],
                             temperature=self.args.temperature,
                         )
@@ -329,15 +354,17 @@ class DataEngine:
                         # Parse and validate
                         for r in responses:
                             response_content = r.choices[0].message.content
-                            parsed_json = validate_json_response(response_content)
-
-                            if parsed_json:
-                                questions_list.append(parsed_json)
-                                success_count += 1
-                            else:
+                            generated_questions = validate_json_response_questions(response_content)
+                            if not generated_questions:
                                 self.failed_samples.append(response_content)
                                 failure_type = self.analyze_failure(response_content)
                                 self.failure_analysis[failure_type].append(response_content)
+                                continue
+
+                            # append all questions
+                            for question in generated_questions:
+                                questions_list.append(question)
+                                success_count += 1
 
                     except Exception:
                         consecutive_failures += 1

@@ -29,6 +29,36 @@ Here are additional inputs to guide you:
 
 Now, generate a single training sample in the JSON format specified above. Respond only with valid JSON."""
 
+SAMPLE_QUESTIONS_PROMPT = """I want to train a large language model and you should help me generate training data for it. Here is the system prompt of the model that tells it what it should be able to do:
+
+<system_prompt>
+{{{{system_prompt}}}}
+</system_prompt>
+
+You should now generate {{{{num_questions}}}} training samples for the model. Each training sample should consist of a JSON object with the field "messages", which is a list of messages alternating between user and assistant roles. The first message must always be from the user, and the last one from the assistant. Depending on the use case of the system prompt, there may be multiple user and assistant messages. The format for each training sample must strictly follow this format:
+
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": "<user_content>"
+        },
+        {
+            "role": "assistant",
+            "content": "<assistant_content>"
+        }
+    ]
+}
+
+It is crucial that you respond only with valid JSON. Do not include any introductions, explanations, summaries, or additional text that is not part of the JSON object. Any non-JSON content will be considered incorrect. If you encounter issues generating valid JSON, please retry or provide a default response.
+
+Here are additional inputs to guide you:
+
+{{{{instructions}}}}
+{{{{examples}}}}
+
+Now, generate a single training sample in the JSON format specified above. Respond only with valid JSON."""
+
 TREE_GENERATION_PROMPT = """I want to train a large language model and I am using another, bigger large language model to generate training data for this. However, if we always ask the bigger model to generate training data with the same prompt, it will end up generating very repetitive training samples. Therefore, we will slightly modify our prompt for each sampling procedure according to some aspects. For instance, when asking the model to generate news articles, we could modify the prompt to let the model tell news articles about particular topics, such as business or politics. To further generate training data, we will do this recursively, and generate submodifications to the prompt. For instance, within the domain of business, we could adapt the prompt to generate news about the stock market or business scandals, and within politics, we could ask the model to generate articles for subtopics like elections or climate policy. We do this recursively, and therefore, we get a tree-like structure of topics.
 Your job is the following: I will give you a path of nodes down the topic tree - you should then come up with a list of new subtopics for this given node and return it as a python list. Here are a few examples of what your outputs should look like, related to the news example I just gave you:
 

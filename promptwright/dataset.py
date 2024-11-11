@@ -88,6 +88,8 @@ class Dataset:
         if "messages" not in sample:
             return False
 
+        print("message is")
+        print(sample["messages"])
         for message in sample["messages"]:
             if "role" not in message or "content" not in message:
                 return False
