@@ -12,15 +12,15 @@ tree = TopicTree(
     args=TopicTreeArguments(
         root_prompt="Capital Cities of the World.",
         model_system_prompt=system_prompt,
-        tree_degree=3,  # Different continents
-        tree_depth=2,  # Deeper tree for more specific topics
+        tree_degree=10,  # Different continents
+        tree_depth=1,  # Set the tree depth to 1 for a single basic question
         temperature=0.7,  # Higher temperature for more creative variations
         model_name="ollama/mistral-nemo:latest",  # Model name
     )
 )
 
 tree.build_tree()
-tree.save("basic_prompt_topictree.jsonl")
+tree.save("basic_question_tt.jsonl")
 
 engine = DataEngine(
     args=EngineArguments(
@@ -39,4 +39,4 @@ dataset = engine.create_data(
     model_name="ollama/mistral-nemo:latest",
 )
 
-dataset.save("basic_prompt_dataset.jsonl")
+dataset.save("basic_question.jsonl")

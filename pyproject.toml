@@ -1,52 +1,59 @@
-[project]
+[tool.poetry]
 name = "promptwright"
 version = "1.0.1"
-description = "A tool for generating and managing prompts for local LLMs using Ollama"
+description = "LLM based Synthetic Data Generation"
+authors = ["Luke Hinds <luke@stacklok.com>"]
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-    "requests>=2.25.0",
-    "tqdm>=4.65.0",
-    "huggingface-hub==0.26.0",
-    "datasets==3.0.2",
-]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-mock>=3.10.0",
-    "requests-mock>=1.11.0",
-    "ruff>=0.1.0",
-]
+[tool.poetry.dependencies]
+python = ">=3.11"
+certifi = "2024.7.4"
+charset-normalizer = "3.4.0"
+idna = "3.10"
+requests = "2.32.3"
+tqdm = "4.66.5"
+urllib3 = "2.2.3"
+huggingface-hub = "0.26.0"
+datasets = "3.0.2"
+litellm = "1.52.1"
+PyYAML = ">=6.0.1"
+click = ">=8.1.7"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0.0"
+pytest-cov = ">=4.0.0"
+pytest-mock = ">=3.10.0"
+requests-mock = ">=1.11.0"
+ruff = ">=0.1.0"
+black = "^24.10.0"
+bandit = ">=1.7.10"
+
+[tool.poetry.scripts]
+promptwright = "promptwright.cli:cli"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q --strict-markers"
-testpaths = [
-    "tests",
-]
+testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",
+    "ignore::ImportWarning",
+    "ignore::pydantic.PydanticDeprecatedSince20",
 ]
 
 [tool.ruff]
-# Target Python version
 target-version = "py311"
-
-# Line length
 line-length = 100
 
 [tool.ruff.lint]
-# Enable all rules by default, then configure specific ones
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -87,10 +94,8 @@ ignore = [
     "PLR0915",   # Too many statements
 ]
 
-# Allow unused variables when underscore-prefixed
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-# Files to exclude
 exclude = [
     ".git",
     ".ruff_cache",
@@ -102,7 +107,6 @@ exclude = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-# Test files can use assertions and have long functions
 "tests/*" = ["S101", "PLR0915"]
 "conftest.py" = ["S101"]
 
@@ -117,7 +121,6 @@ convention = "google"
 max-args = 8
 
 [tool.ruff.format]
-# Formatting options
 indent-style = "space"
 line-ending = "lf"
 skip-magic-trailing-comma = false

@@ -22,19 +22,38 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
 
-    - name: Install dependencies
+    - name: Install Poetry
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        curl -sSL https://install.python-poetry.org | python3 -
 
-    - name: Run tests with pytest
+    - name: Configure Poetry
       run: |
-        make test
-        
-    - name: Run style checks
-      run: |
-        pip install ruff
-        ruff check .
-        ruff format --check .
+        poetry config virtualenvs.create true
+        poetry config virtualenvs.in-project true
 
+    - name: Cache Poetry virtualenv
+      uses: actions/cache@v3
+      id: cache
+      with:
+        path: ./.venv
+        key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: poetry install --with dev
+
+    - name: Run code formatting
+      run: poetry run make format
+
+    - name: Run linting
+      run: poetry run make lint
+
+    - name: Run tests
+      run: poetry run make test
+
+    - name: Run security checks
+      run: poetry run make security
+
+    - name: Run build
+      run: poetry run make build

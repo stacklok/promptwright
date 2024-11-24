@@ -1,4 +1,7 @@
-# promptwright/__init__.py
+"""PromptWright - A tool for generating training data for language models."""
+
+from .cli import cli
+from .config import PromptWrightConfig
 from .dataset import Dataset
 from .engine import DataEngine, EngineArguments
 from .hf_hub import HFUploader
@@ -13,4 +16,6 @@ __all__ = [
     "EngineArguments",
     "Dataset",
     "HFUploader",
+    "PromptWrightConfig",
+    "cli",
 ]
