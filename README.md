@@ -39,6 +39,16 @@ just open an issue).
 
 ### Installation
 
+#### pip
+
+You can install Promptwright using pip:
+
+```bash
+pip install promptwright
+```
+
+#### Development Installation
+
 To install the prerequisites, you can use the following commands:
 
 ```bash
@@ -49,12 +59,6 @@ curl -sSL https://install.python-poetry.org | python3 -
 git clone https://github.com/StacklokLabs/promptwright.git
 cd promptwright
 poetry install
-
-# Start Ollama service
-ollama serve
-
-# Pull your desired model
-ollama pull {model_name} # whichever model you want to use
 ```
 
 ### Usage
