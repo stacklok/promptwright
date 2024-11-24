@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "promptwright"
-version = "1.0.1"
+version = "1.1.1"
 description = "LLM based Synthetic Data Generation"
 authors = ["Luke Hinds <luke@stacklok.com>"]
 readme = "README.md"
