@@ -33,3 +33,12 @@ engine = DataEngine(
         max_retries=3,  # Retry failed generations up to 3 times
     )
 )
+
+
+dataset = engine.create_data(
+    num_steps=15,  # Generate 15 entries
+    batch_size=2,  # Generate 2 entries at a time
+    topic_tree=tree,
+)
+
+dataset.save("historical_figures_database.jsonl")

@@ -88,7 +88,9 @@ class TopicTreeValidator:
             }
             print("Recommended configurations to fit within the tree paths:")
             print(f" - Reduce num_steps to: {recommendation['suggested_num_steps']} or")
-            print(f" - Reduce batch_size to: {recommendation['suggested_batch_size']} or")
+            print(
+                f" - Reduce batch_size to: {recommendation['suggested_batch_size']} or"
+            )
             print(" - Increase tree_depth or tree_degree to provide more paths.")
             return recommendation
 
@@ -105,7 +107,9 @@ class TopicTree:
     def __init__(self, args: TopicTreeArguments):
         """Initialize the TopicTree with the given arguments."""
         if not args.model_name:
-            raise ValueError("model_name must be specified in TopicTreeArguments")  # noqa: TRY003
+            raise ValueError(  # noqa: TRY003
+                "model_name must be specified in TopicTreeArguments"
+            )  # noqa: TRY003
         json_instructions = TREE_JSON_INSTRUCTIONS
 
         self.args = args
@@ -135,7 +139,9 @@ class TopicTree:
 
             print(f"Tree building complete. Generated {len(self.tree_paths)} paths.")
             if self.failed_generations:
-                print(f"Warning: {len(self.failed_generations)} subtopic generations failed.")
+                print(
+                    f"Warning: {len(self.failed_generations)} subtopic generations failed."
+                )
 
         except Exception as e:
             print(f"Error building tree: {str(e)}")
@@ -151,7 +157,9 @@ class TopicTree:
         print(f"Generating {num_subtopics} subtopics for: {' -> '.join(node_path)}")
 
         prompt = TREE_GENERATION_PROMPT
-        prompt = prompt.replace("{{{{system_prompt}}}}", system_prompt if system_prompt else "")
+        prompt = prompt.replace(
+            "{{{{system_prompt}}}}", system_prompt if system_prompt else ""
+        )
         prompt = prompt.replace("{{{{subtopics_list}}}}", " -> ".join(node_path))
         prompt = prompt.replace("{{{{num_subtopics}}}}", str(num_subtopics))
 
@@ -169,7 +177,9 @@ class TopicTree:
                     messages=[{"role": "user", "content": prompt}],
                 )
 
-                subtopics = validate_and_clean_response(response.choices[0].message.content)
+                subtopics = validate_and_clean_response(
+                    response.choices[0].message.content
+                )
 
                 if subtopics and len(subtopics) > 0:
                     # Validate and clean each subtopic
@@ -198,7 +208,9 @@ class TopicTree:
                 time.sleep(2**retries)  # Exponential backoff
 
         # If all retries failed, generate default subtopics and log the failure
-        default_subtopics = [f"subtopic_{i+1}_for_{node_path[-1]}" for i in range(num_subtopics)]
+        default_subtopics = [
+            f"subtopic_{i+1}_for_{node_path[-1]}" for i in range(num_subtopics)
+        ]
         self.failed_generations.append(
             {"path": node_path, "attempts": retries, "last_error": last_error}
         )
@@ -217,7 +229,9 @@ class TopicTree:
     ) -> list[list[str]]:
         """Build a subtree with improved error handling and validation."""
         # Convert any non-string elements to strings
-        node_path = [str(node) if not isinstance(node, str) else node for node in node_path]
+        node_path = [
+            str(node) if not isinstance(node, str) else node for node in node_path
+        ]
         print(f"Building topic subtree: {' -> '.join(node_path)}")
 
         if subtree_depth == 0:
@@ -243,7 +257,11 @@ class TopicTree:
                 new_path = node_path + [subnode]
                 result.extend(
                     self.build_subtree(
-                        new_path, system_prompt, tree_degree, subtree_depth - 1, model_name
+                        new_path,
+                        system_prompt,
+                        tree_degree,
+                        subtree_depth - 1,
+                        model_name,
                     )
                 )
             except Exception as e:

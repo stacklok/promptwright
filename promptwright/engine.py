@@ -19,7 +19,9 @@ if TYPE_CHECKING:
     from .topic_tree import TopicTree
 
 
-def validate_json_response(json_str: str, schema: dict[str, Any] | None = None) -> dict | None:
+def validate_json_response(
+    json_str: str, schema: dict[str, Any] | None = None
+) -> dict | None:
     """Validate and clean JSON response from LLM."""
     try:
         json_match = re.search(r"(?s)\{.*\}", json_str)
@@ -61,9 +63,13 @@ class DataEngine:
             or not isinstance(args.model_name, str)
             or not args.model_name.strip()
         ):
-            raise ValueError("model_name must be a non-empty string in EngineArguments")  # noqa: TRY003
+            raise ValueError(  # noqa: TRY003
+                "model_name must be a non-empty string in EngineArguments"
+            )  # noqa: TRY003
 
-        self.model_name = args.model_name.strip()  # Store model_name as instance variable
+        self.model_name = (
+            args.model_name.strip()
+        )  # Store model_name as instance variable
         self.args = args
         self.dataset = Dataset()
         self.failed_samples = []
@@ -84,7 +90,8 @@ class DataEngine:
             if "schema" in error_str.lower():
                 return "invalid_schema"
             if any(
-                api_err in error_str.lower() for api_err in ["timeout", "rate limit", "connection"]
+                api_err in error_str.lower()
+                for api_err in ["timeout", "rate limit", "connection"]
             ):
                 return "api_errors"
             return "other_errors"
@@ -111,7 +118,11 @@ class DataEngine:
                 # Get up to 3 examples for each category
                 examples = failures[:3]
                 summary["failure_examples"][category] = [
-                    str(ex)[:200] + "..." if len(str(ex)) > 200 else str(ex)  # noqa: PLR2004
+                    (
+                        str(ex)[:200] + "..."
+                        if len(str(ex)) > 200  # noqa: PLR2004
+                        else str(ex)  # noqa: PLR2004
+                    )  # noqa: PLR2004
                     for ex in examples
                 ]
         return summary
@@ -182,7 +193,9 @@ class DataEngine:
                         try:
                             responses = litellm.batch_completion(
                                 model=self.model_name,
-                                messages=[[{"role": "user", "content": p}] for p in prompts],
+                                messages=[
+                                    [{"role": "user", "content": p}] for p in prompts
+                                ],
                                 temperature=self.args.temperature,
                             )
 
@@ -195,25 +208,35 @@ class DataEngine:
                                     samples.append(parsed_json)
                                 else:
                                     self.failed_samples.append(response_content)
-                                    failure_type = self.analyze_failure(response_content)
-                                    self.failure_analysis[failure_type].append(response_content)
+                                    failure_type = self.analyze_failure(
+                                        response_content
+                                    )
+                                    self.failure_analysis[failure_type].append(
+                                        response_content
+                                    )
 
                             if samples:
-                                failed_samples, failure_descriptions = self.dataset.add_samples(
-                                    samples
+                                failed_samples, failure_descriptions = (
+                                    self.dataset.add_samples(samples)
                                 )
                                 if failed_samples:
                                     for sample, desc in zip(
-                                        failed_samples, failure_descriptions, strict=True
+                                        failed_samples,
+                                        failure_descriptions,
+                                        strict=True,
                                     ):
                                         self.failed_samples.append(sample)
-                                        self.failure_analysis["invalid_schema"].append(desc)
+                                        self.failure_analysis["invalid_schema"].append(
+                                            desc
+                                        )
                                 pbar.update(len(samples) - len(failed_samples))
                                 break  # Success - exit retry loop
 
                         except Exception as e:
                             if attempt == self.args.max_retries - 1:
-                                print(f"Failed after {self.args.max_retries} attempts: {str(e)}")
+                                print(
+                                    f"Failed after {self.args.max_retries} attempts: {str(e)}"
+                                )
                                 self.failed_samples.append(str(e))
                                 failure_type = self.analyze_failure(str(e), error=e)
                                 self.failure_analysis[failure_type].append(str(e))
@@ -248,7 +271,9 @@ class DataEngine:
                 print(f"\n{failure_type.replace('_', ' ').title()}: {count}")
                 if failure_type in summary["failure_examples"]:
                     print("Example failures:")
-                    for i, example in enumerate(summary["failure_examples"][failure_type], 1):
+                    for i, example in enumerate(
+                        summary["failure_examples"][failure_type], 1
+                    ):
                         print(f"  {i}. {example}")
         print("\n=============================")
 
@@ -258,12 +283,18 @@ class DataEngine:
         num_example_demonstrations: int,
         subtopics_list: list[str] = None,
     ) -> str:
-        prompt = data_creation_prompt.replace("{{{{system_prompt}}}}", self.build_system_prompt())
-        prompt = prompt.replace("{{{{instructions}}}}", self.build_custom_instructions_text())
+        prompt = data_creation_prompt.replace(
+            "{{{{system_prompt}}}}", self.build_system_prompt()
+        )
+        prompt = prompt.replace(
+            "{{{{instructions}}}}", self.build_custom_instructions_text()
+        )
         prompt = prompt.replace(
             "{{{{examples}}}}", self.build_examples_text(num_example_demonstrations)
         )
-        return prompt.replace("{{{{subtopics}}}}", self.build_subtopics_text(subtopics_list))
+        return prompt.replace(
+            "{{{{subtopics}}}}", self.build_subtopics_text(subtopics_list)
+        )
 
     def build_system_prompt(self):
         return self.args.system_prompt
@@ -277,10 +308,16 @@ class DataEngine:
         if self.args.example_data is None or num_example_demonstrations == 0:
             return ""
 
-        examples = random.sample(self.args.example_data.samples, num_example_demonstrations)
+        examples = random.sample(
+            self.args.example_data.samples, num_example_demonstrations
+        )
         examples_text = "Here are output examples:\n\n"
-        examples_text += "\n".join(f"Example {i+1}: \n\n{ex}\n" for i, ex in enumerate(examples))
-        return f"\nHere are output examples:\n<examples>\n{examples_text}\n</examples>\n"
+        examples_text += "\n".join(
+            f"Example {i+1}: \n\n{ex}\n" for i, ex in enumerate(examples)
+        )
+        return (
+            f"\nHere are output examples:\n<examples>\n{examples_text}\n</examples>\n"
+        )
 
     def build_subtopics_text(self, subtopic_list: list[str]):
         if subtopic_list is None:
