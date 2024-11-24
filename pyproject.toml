@@ -25,6 +25,7 @@ pytest-cov = ">=4.0.0"
 pytest-mock = ">=3.10.0"
 requests-mock = ">=1.11.0"
 ruff = ">=0.1.0"
+black = "^24.10.0"
 
 [tool.poetry.scripts]
 promptwright = "promptwright.cli:cli"
