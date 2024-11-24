@@ -5,7 +5,7 @@ system_prompt: |
 
 topic_tree:
   args:
-    root_prompt: "Capital Cities of the World."
+    root_prompt: "Programming Challenges Across Different Difficulty Levels and Concepts"
     model_system_prompt: "<system_prompt_placeholder>"  # Will be replaced with system_prompt
     tree_degree: 3  # Different continents
     tree_depth: 2  # Deeper tree for more specific topics
@@ -16,7 +16,14 @@ topic_tree:
 
 data_engine:
   args:
-    instructions: "Please provide training examples with questions about capital cities of the world."
+    instructions: |
+      Generate programming challenges that include:
+        - Problem description
+        - Input/Output examples
+        - Constraints and edge cases
+        - Hint system (progressive hints)
+        - Solution approach discussion
+        - Time/Space complexity requirements
     system_prompt: "<system_prompt_placeholder>"  # Will be replaced with system_prompt
     provider: "ollama"  # LLM provider
     model: "mistral-nemo:latest"  # Model name
