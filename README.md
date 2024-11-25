@@ -313,14 +313,6 @@ With sys_msg=false:
 }
 ```
 
-## Model Compatibility
-
-The library should work with most LLM models. It has been tested with the
-following models so far:
-
-- **Mistral**
-- **LLaMA3**
-- **Qwen2.5**
 
 ## Unpredictable Behavior
 
