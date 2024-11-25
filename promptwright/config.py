@@ -86,12 +86,17 @@ class PromptWrightConfig:
         # Construct full model string
         args["model_name"] = construct_model_string(provider, model)
 
+        # Get sys_msg from dataset config, defaulting to True
+        dataset_config = self.get_dataset_config()
+        sys_msg = dataset_config.get("creation", {}).get("sys_msg", True)
+
         return EngineArguments(
             instructions=args.get("instructions", ""),
             system_prompt=args.get("system_prompt", ""),
             model_name=args["model_name"],
             temperature=args.get("temperature", 0.9),
             max_retries=args.get("max_retries", 2),
+            sys_msg=sys_msg,
         )
 
     def get_dataset_config(self) -> dict:

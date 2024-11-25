@@ -47,6 +47,40 @@ dataset:
     batch_size: 1
     provider: "test"
     model: "model"
+    sys_msg: true
+  save_as: "test_dataset.jsonl"
+"""
+
+
+@pytest.fixture
+def sample_yaml_content_no_sys_msg():
+    """Sample YAML content without sys_msg setting."""
+    return """
+system_prompt: "Test system prompt"
+topic_tree:
+  args:
+    root_prompt: "Test root prompt"
+    model_system_prompt: "<system_prompt_placeholder>"
+    tree_degree: 3
+    tree_depth: 2
+    temperature: 0.7
+    provider: "test"
+    model: "model"
+  save_as: "test_tree.jsonl"
+data_engine:
+  args:
+    instructions: "Test instructions"
+    system_prompt: "<system_prompt_placeholder>"
+    provider: "test"
+    model: "model"
+    temperature: 0.9
+    max_retries: 2
+dataset:
+  creation:
+    num_steps: 5
+    batch_size: 1
+    provider: "test"
+    model: "model"
   save_as: "test_dataset.jsonl"
 """
 
@@ -56,6 +90,20 @@ def sample_config_file(sample_yaml_content):
     """Create a temporary config file for testing."""
     with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
         f.write(sample_yaml_content)
+        temp_path = f.name
+
+    yield temp_path
+
+    # Cleanup
+    if os.path.exists(temp_path):
+        os.unlink(temp_path)
+
+
+@pytest.fixture
+def sample_config_file_no_sys_msg(sample_yaml_content_no_sys_msg):
+    """Create a temporary config file without sys_msg setting."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+        f.write(sample_yaml_content_no_sys_msg)
         temp_path = f.name
 
     yield temp_path
@@ -77,6 +125,7 @@ def test_start_help(cli_runner):
     result = cli_runner.invoke(cli, ["start", "--help"])
     assert result.exit_code == 0
     assert "Generate training data from a YAML configuration file" in result.output
+    assert "--sys-msg" in result.output
 
 
 @patch("promptwright.cli.TopicTree")
@@ -107,6 +156,66 @@ def test_start_command_basic(
     mock_data_engine.assert_called_once()
     mock_engine_instance.create_data.assert_called_once()
     mock_dataset.save.assert_called_once()
+
+
+@patch("promptwright.cli.TopicTree")
+@patch("promptwright.cli.DataEngine")
+def test_start_command_with_sys_msg_override(
+    mock_data_engine, mock_topic_tree, cli_runner, sample_config_file
+):
+    """Test start command with sys_msg override."""
+    # Setup mocks
+    mock_tree_instance = Mock()
+    mock_engine_instance = Mock()
+    mock_dataset = Mock()
+
+    mock_topic_tree.return_value = mock_tree_instance
+    mock_data_engine.return_value = mock_engine_instance
+    mock_engine_instance.create_data.return_value = mock_dataset
+
+    # Run command with sys_msg override
+    result = cli_runner.invoke(
+        cli,
+        [
+            "start",
+            sample_config_file,
+            "--sys-msg",
+            "false",
+        ],
+    )
+
+    # Verify command executed successfully
+    assert result.exit_code == 0
+
+    # Verify create_data was called with sys_msg=False
+    args, kwargs = mock_engine_instance.create_data.call_args
+    assert kwargs["sys_msg"] is False
+
+
+@patch("promptwright.cli.TopicTree")
+@patch("promptwright.cli.DataEngine")
+def test_start_command_default_sys_msg(
+    mock_data_engine, mock_topic_tree, cli_runner, sample_config_file_no_sys_msg
+):
+    """Test start command with default sys_msg behavior."""
+    # Setup mocks
+    mock_tree_instance = Mock()
+    mock_engine_instance = Mock()
+    mock_dataset = Mock()
+
+    mock_topic_tree.return_value = mock_tree_instance
+    mock_data_engine.return_value = mock_engine_instance
+    mock_engine_instance.create_data.return_value = mock_dataset
+
+    # Run command without sys_msg override
+    result = cli_runner.invoke(cli, ["start", sample_config_file_no_sys_msg])
+
+    # Verify command executed successfully
+    assert result.exit_code == 0
+
+    # Verify create_data was called with default sys_msg (should be None to use engine default)
+    args, kwargs = mock_engine_instance.create_data.call_args
+    assert "sys_msg" not in kwargs or kwargs["sys_msg"] is None
 
 
 @patch("promptwright.cli.TopicTree")
@@ -148,6 +257,8 @@ def test_start_command_with_overrides(
             "10",
             "--batch-size",
             "2",
+            "--sys-msg",
+            "false",
         ],
     )
 
@@ -169,6 +280,7 @@ def test_start_command_with_overrides(
     assert kwargs["num_steps"] == 10  # noqa: PLR2004
     assert kwargs["batch_size"] == 2  # noqa: PLR2004
     assert kwargs["model_name"] == "override/model"
+    assert kwargs["sys_msg"] is False
 
 
 def test_start_command_missing_config(cli_runner):

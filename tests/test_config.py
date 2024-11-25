@@ -44,6 +44,46 @@ def sample_config_dict():
                 "batch_size": 1,
                 "provider": "test",
                 "model": "model",
+                "sys_msg": True,
+            },
+            "save_as": "test_dataset.jsonl",
+        },
+    }
+
+
+@pytest.fixture
+def sample_config_dict_no_sys_msg():
+    """Sample configuration dictionary without sys_msg setting."""
+    return {
+        "system_prompt": "Test system prompt",
+        "topic_tree": {
+            "args": {
+                "root_prompt": "Test root prompt",
+                "model_system_prompt": "<system_prompt_placeholder>",
+                "tree_degree": 3,
+                "tree_depth": 2,
+                "temperature": 0.7,
+                "provider": "test",
+                "model": "model",
+            },
+            "save_as": "test_tree.jsonl",
+        },
+        "data_engine": {
+            "args": {
+                "instructions": "Test instructions",
+                "system_prompt": "<system_prompt_placeholder>",
+                "provider": "test",
+                "model": "model",
+                "temperature": 0.9,
+                "max_retries": 2,
+            }
+        },
+        "dataset": {
+            "creation": {
+                "num_steps": 5,
+                "batch_size": 1,
+                "provider": "test",
+                "model": "model",
             },
             "save_as": "test_dataset.jsonl",
         },
@@ -55,6 +95,20 @@ def sample_yaml_file(sample_config_dict):
     """Create a temporary YAML file with sample configuration."""
     with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
         yaml.dump(sample_config_dict, f)
+        temp_path = f.name
+
+    yield temp_path
+
+    # Cleanup
+    if os.path.exists(temp_path):
+        os.unlink(temp_path)
+
+
+@pytest.fixture
+def sample_yaml_file_no_sys_msg(sample_config_dict_no_sys_msg):
+    """Create a temporary YAML file without sys_msg setting."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+        yaml.dump(sample_config_dict_no_sys_msg, f)
         temp_path = f.name
 
     yield temp_path
@@ -99,6 +153,16 @@ def test_get_engine_args(sample_yaml_file):
     assert args.model_name == "test/model"
     assert args.temperature == 0.9  # noqa: PLR2004
     assert args.max_retries == 2  # noqa: PLR2004
+    assert args.sys_msg is True  # Default from dataset config
+
+
+def test_get_engine_args_no_sys_msg(sample_yaml_file_no_sys_msg):
+    """Test getting EngineArguments without sys_msg setting."""
+    config = PromptWrightConfig.from_yaml(sample_yaml_file_no_sys_msg)
+    args = config.get_engine_args()
+
+    assert isinstance(args, EngineArguments)
+    assert args.sys_msg is True  # Default value when not specified
 
 
 def test_get_topic_tree_args_with_overrides(sample_yaml_file):
@@ -133,6 +197,15 @@ def test_get_dataset_config(sample_yaml_file, sample_config_dict):
     dataset_config = config.get_dataset_config()
 
     assert dataset_config == sample_config_dict["dataset"]
+    assert dataset_config["creation"]["sys_msg"] is True
+
+
+def test_get_dataset_config_no_sys_msg(sample_yaml_file_no_sys_msg):
+    """Test getting dataset configuration without sys_msg setting."""
+    config = PromptWrightConfig.from_yaml(sample_yaml_file_no_sys_msg)
+    dataset_config = config.get_dataset_config()
+
+    assert "sys_msg" not in dataset_config["creation"]
 
 
 def test_missing_yaml_file():

@@ -29,6 +29,7 @@ engine = DataEngine(
         model_name="ollama/mistral-nemo:latest",  # Model name
         temperature=0.9,  # Higher temperature for more creative variations
         max_retries=2,  # Retry failed prompts up to 2 times
+        sys_msg=True,  # Include system message in dataset (default: true)
     )
 )
 

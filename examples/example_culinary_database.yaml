@@ -1,13 +1,14 @@
 # Example YAML configuration for basic prompt generation
-system_prompt: "You are a helpful assistant. You provide clear and concise answers to user questions."
+system_prompt: |
+  You are a culinary expert who documents recipes and cooking techniques.
+  Your entries should be detailed, precise, and include both traditional and modern cooking methods.
 
 topic_tree:
   args:
-    root_prompt: "You are a culinary expert who documents recipes and cooking techniques.
-Your entries should be detailed, precise, and include both traditional and modern cooking methods."
+    root_prompt: "Global Cuisine and Cooking Techniques"
     model_system_prompt: "<system_prompt_placeholder>"  # Will be replaced with system_prompt
-    tree_degree: 5  # Different continents
-    tree_depth: 3  # Deeper tree for more specific topics
+    tree_degree: 5  # Different cuisine types
+    tree_depth: 3  # Specific dishes and techniques
     temperature: 0.7  # Higher temperature for more creative variations
     provider: "ollama"  # LLM provider
     model: "mistral-nemo:latest"  # Model name
@@ -35,4 +36,5 @@ dataset:
     batch_size: 1
     provider: "ollama"  # LLM provider
     model: "mistral-nemo:latest"  # Model name
+    sys_msg: true  # Include system message in dataset (default: true)
   save_as: "culinary_database.jsonl"

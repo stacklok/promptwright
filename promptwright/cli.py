@@ -47,6 +47,11 @@ def cli():
     multiple=True,
     help="Additional tags for the dataset (can be specified multiple times)",
 )
+@click.option(
+    "--sys-msg",
+    type=bool,
+    help="Include system message in dataset (default: true)",
+)
 def start(  # noqa: PLR0912
     config_file: str,
     topic_tree_save_as: str | None = None,
@@ -61,6 +66,7 @@ def start(  # noqa: PLR0912
     hf_repo: str | None = None,
     hf_token: str | None = None,
     hf_tags: list[str] | None = None,
+    sys_msg: bool | None = None,
 ) -> None:
     """Generate training data from a YAML configuration file."""
     try:
@@ -150,6 +156,7 @@ def start(  # noqa: PLR0912
                 batch_size=batch_size or dataset_params.get("batch_size", 1),
                 topic_tree=tree,
                 model_name=model_name,
+                sys_msg=sys_msg,  # Pass sys_msg to create_data
             )
         except Exception as e:
             handle_error(
