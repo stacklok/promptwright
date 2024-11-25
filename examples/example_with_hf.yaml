@@ -23,6 +23,7 @@ dataset:
     num_steps: 5
     batch_size: 1
     model_name: "ollama/mistral:latest"
+    sys_msg: true  # Include system message in dataset (default: true)
   save_as: "basic_prompt_dataset.jsonl"
 
 # Hugging Face Hub configuration (optional)

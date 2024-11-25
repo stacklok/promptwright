@@ -54,6 +54,7 @@ class EngineArguments:
     default_batch_size: int = 5
     default_num_examples: int = 3
     request_timeout: int = 30
+    sys_msg: bool = True  # Default to True for including system message
 
 
 class DataEngine:
@@ -81,7 +82,10 @@ class DataEngine:
             "malformed_responses": [],
             "other_errors": [],
         }
-        self.args.system_prompt = ENGINE_JSON_INSTRUCTIONS + self.args.system_prompt
+        # Store original system prompt for dataset inclusion
+        self.original_system_prompt = args.system_prompt
+        # Use ENGINE_JSON_INSTRUCTIONS only for generation prompt
+        self.generation_system_prompt = ENGINE_JSON_INSTRUCTIONS + args.system_prompt
 
     def analyze_failure(self, response_content: str, error: Exception = None) -> str:
         """Analyze the failure reason for a sample."""
@@ -134,6 +138,7 @@ class DataEngine:
         batch_size: int = 10,
         topic_tree: TopicTree = None,
         model_name: str = None,
+        sys_msg: bool = None,  # Allow overriding sys_msg from args
     ):
         if num_steps is None:
             raise ValueError("num_steps must be specified")  # noqa: TRY003
@@ -143,6 +148,9 @@ class DataEngine:
 
         if not self.model_name:
             raise ValueError("No valid model_name provided")  # noqa: TRY003
+
+        # Use provided sys_msg or fall back to args.sys_msg
+        include_sys_msg = sys_msg if sys_msg is not None else self.args.sys_msg
 
         data_creation_prompt = SAMPLE_GENERATION_PROMPT
 
@@ -203,6 +211,17 @@ class DataEngine:
                             for r in responses:
                                 response_content = r.choices[0].message.content
                                 parsed_json = validate_json_response(response_content)
+
+                                if parsed_json and include_sys_msg:  # noqa: SIM102
+                                    # Add system message at the start if sys_msg is True
+                                    if "messages" in parsed_json:
+                                        parsed_json["messages"].insert(
+                                            0,
+                                            {
+                                                "role": "system",
+                                                "content": self.original_system_prompt,
+                                            },
+                                        )
 
                                 if parsed_json:
                                     samples.append(parsed_json)
@@ -284,7 +303,7 @@ class DataEngine:
         subtopics_list: list[str] = None,
     ) -> str:
         prompt = data_creation_prompt.replace(
-            "{{{{system_prompt}}}}", self.build_system_prompt()
+            "{{{{system_prompt}}}}", self.generation_system_prompt
         )
         prompt = prompt.replace(
             "{{{{instructions}}}}", self.build_custom_instructions_text()
@@ -297,7 +316,8 @@ class DataEngine:
         )
 
     def build_system_prompt(self):
-        return self.args.system_prompt
+        """Return the original system prompt for dataset inclusion."""
+        return self.original_system_prompt
 
     def build_custom_instructions_text(self) -> str:
         if self.args.instructions is None:

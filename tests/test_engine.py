@@ -77,6 +77,103 @@ def test_create_data_success(mock_batch_completion, data_engine):
     assert len(dataset.samples) == expected_num_samples
 
 
+@patch("promptwright.engine.litellm.batch_completion")
+def test_create_data_with_sys_msg_default(mock_batch_completion, data_engine):
+    # Mock valid JSON response
+    mock_batch_completion.return_value = [
+        MagicMock(
+            choices=[
+                MagicMock(
+                    message=MagicMock(
+                        content='{"messages": [{"role": "user", "content": "example"}, {"role": "assistant", "content": "response"}]}'
+                    )
+                )
+            ]
+        )
+    ]
+
+    topic_tree = MagicMock()
+    topic_tree.tree_paths = ["path1"]
+
+    # Generate data with default sys_msg (True)
+    dataset = data_engine.create_data(num_steps=1, batch_size=1, topic_tree=topic_tree)
+
+    # Verify system message is included
+    assert len(dataset.samples) == 1
+    assert len(dataset.samples[0]["messages"]) == 3  # noqa: PLR2004
+    assert dataset.samples[0]["messages"][0]["role"] == "system"
+    assert (
+        dataset.samples[0]["messages"][0]["content"] == data_engine.args.system_prompt
+    )
+
+
+@patch("promptwright.engine.litellm.batch_completion")
+def test_create_data_without_sys_msg(mock_batch_completion, data_engine):
+    # Mock valid JSON response
+    mock_batch_completion.return_value = [
+        MagicMock(
+            choices=[
+                MagicMock(
+                    message=MagicMock(
+                        content='{"messages": [{"role": "user", "content": "example"}, {"role": "assistant", "content": "response"}]}'
+                    )
+                )
+            ]
+        )
+    ]
+
+    topic_tree = MagicMock()
+    topic_tree.tree_paths = ["path1"]
+
+    # Generate data with sys_msg=False
+    dataset = data_engine.create_data(
+        num_steps=1, batch_size=1, topic_tree=topic_tree, sys_msg=False
+    )
+
+    # Verify system message is not included
+    assert len(dataset.samples) == 1
+    assert len(dataset.samples[0]["messages"]) == 2  # noqa: PLR2004
+    assert dataset.samples[0]["messages"][0]["role"] == "user"
+
+
+@patch("promptwright.engine.litellm.batch_completion")
+def test_create_data_sys_msg_override(mock_batch_completion):
+    # Create engine with sys_msg=False
+    args = EngineArguments(
+        instructions="Test instructions",
+        system_prompt="Test system prompt",
+        model_name="test-model",
+        sys_msg=False,  # Default to False
+    )
+    engine = DataEngine(args)
+
+    # Mock valid JSON response
+    mock_batch_completion.return_value = [
+        MagicMock(
+            choices=[
+                MagicMock(
+                    message=MagicMock(
+                        content='{"messages": [{"role": "user", "content": "example"}, {"role": "assistant", "content": "response"}]}'
+                    )
+                )
+            ]
+        )
+    ]
+
+    topic_tree = MagicMock()
+    topic_tree.tree_paths = ["path1"]
+
+    # Override sys_msg=False with True in create_data
+    dataset = engine.create_data(
+        num_steps=1, batch_size=1, topic_tree=topic_tree, sys_msg=True
+    )
+
+    # Verify system message is included despite engine default
+    assert len(dataset.samples) == 1
+    assert len(dataset.samples[0]["messages"]) == 3  # noqa: PLR2004
+    assert dataset.samples[0]["messages"][0]["role"] == "system"
+
+
 def test_build_prompt(data_engine):
     prompt = data_engine.build_prompt("Test prompt", 3, ["subtopic1", "subtopic2"])
     assert "{{system_prompt}}" not in prompt

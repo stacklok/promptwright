@@ -48,8 +48,8 @@ class HFUploader:
         try:
             card = DatasetCard.load(repo_id)
 
-            # Initialize tags if not a list
-            if not isinstance(card.data.tags, list):
+            # Initialize tags if not present
+            if not hasattr(card.data, "tags") or not isinstance(card.data.tags, list):
                 card.data.tags = []
 
             # Add default promptwright tags

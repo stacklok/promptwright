@@ -26,6 +26,7 @@ just open an issue).
 - **YAML Configuration**: Define your generation tasks using YAML configuration files
 - **Command Line Interface**: Run generation tasks directly from the command line
 - **Push to Hugging Face**: Push the generated dataset to Hugging Face Hub with automatic dataset cards and tags
+- **System Message Control**: Choose whether to include system messages in the generated dataset
 
 ## Getting Started
 
@@ -95,6 +96,7 @@ dataset:
     num_steps: 5
     batch_size: 1
     model_name: "ollama/mistral:latest"
+    sys_msg: true  # Include system message in dataset (default: true)
   save_as: "basic_prompt_dataset.jsonl"
 
 # Optional Hugging Face Hub configuration
@@ -128,6 +130,7 @@ promptwright start config.yaml \
   --tree-depth 3 \
   --num-steps 10 \
   --batch-size 2 \
+  --sys-msg true \  # Control system message inclusion (default: true)
   --hf-repo username/dataset-name \
   --hf-token your-token \
   --hf-tags tag1 --hf-tags tag2
@@ -185,6 +188,7 @@ engine = DataEngine(
         model_name="ollama/llama3",
         temperature=0.9,
         max_retries=2,
+        sys_msg=True,  # Include system message in dataset (default: true)
     )
 )
 ```
@@ -218,6 +222,7 @@ make all
 
 ### Prompt Output Examples
 
+With sys_msg=true (default):
 ```json
 {
   "messages": [
@@ -225,6 +230,22 @@ make all
       "role": "system",
       "content": "You are tasked with designing an immersive virtual reality experience that transports users to a fantastical world of wonder."
     },
+    {
+      "role": "user",
+      "content": "Create a descriptive passage about a character discovering their hidden talents."
+    },
+    {
+      "role": "assistant",
+      "content": "As she stared at the canvas, Emma's fingers hovered above the paintbrushes, as if hesitant to unleash the colors that had been locked within her. The strokes began with bold abandon, swirling blues and greens merging into a mesmerizing dance of light and shadow. With each passing moment, she felt herself becoming the art – her very essence seeping onto the canvas like watercolors in a spring storm. The world around her melted away, leaving only the vibrant symphony of color and creation."
+    }
+  ]
+}
+```
+
+With sys_msg=false:
+```json
+{
+  "messages": [
     {
       "role": "user",
       "content": "Create a descriptive passage about a character discovering their hidden talents."

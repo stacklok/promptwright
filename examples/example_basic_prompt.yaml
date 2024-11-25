@@ -27,4 +27,5 @@ dataset:
     batch_size: 1
     provider: "ollama"  # LLM provider
     model: "mistral-nemo:latest"  # Model name
+    sys_msg: true  # Include system message in dataset (default: true)
   save_as: "basic_prompt_dataset.jsonl"
