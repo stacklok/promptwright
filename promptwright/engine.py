@@ -207,10 +207,6 @@ class DataEngine:
                                 ],
                                 "temperature": self.args.temperature,
                             }
-                            
-                            # # Add base_url only for Ollama
-                            # if self.model_name.startswith("ollama/"):
-                            #     completion_args["base_url"] = "http://localhost:11434"
 
                             responses = litellm.batch_completion(**completion_args)
 

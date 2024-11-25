@@ -1,6 +1,5 @@
 """Configuration handling for YAML-based promptwright configurations."""
 
-import os
 from dataclasses import dataclass
 
 import yaml
