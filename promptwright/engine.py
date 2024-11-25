@@ -212,13 +212,16 @@ class DataEngine:
                                 response_content = r.choices[0].message.content
                                 parsed_json = validate_json_response(response_content)
 
-                                if parsed_json and include_sys_msg:
+                                if parsed_json and include_sys_msg:  # noqa: SIM102
                                     # Add system message at the start if sys_msg is True
                                     if "messages" in parsed_json:
-                                        parsed_json["messages"].insert(0, {
-                                            "role": "system",
-                                            "content": self.original_system_prompt
-                                        })
+                                        parsed_json["messages"].insert(
+                                            0,
+                                            {
+                                                "role": "system",
+                                                "content": self.original_system_prompt,
+                                            },
+                                        )
 
                                 if parsed_json:
                                     samples.append(parsed_json)

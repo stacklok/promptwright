@@ -100,9 +100,11 @@ def test_create_data_with_sys_msg_default(mock_batch_completion, data_engine):
 
     # Verify system message is included
     assert len(dataset.samples) == 1
-    assert len(dataset.samples[0]["messages"]) == 3  # system + user + assistant
+    assert len(dataset.samples[0]["messages"]) == 3  # noqa: PLR2004
     assert dataset.samples[0]["messages"][0]["role"] == "system"
-    assert dataset.samples[0]["messages"][0]["content"] == data_engine.args.system_prompt
+    assert (
+        dataset.samples[0]["messages"][0]["content"] == data_engine.args.system_prompt
+    )
 
 
 @patch("promptwright.engine.litellm.batch_completion")
@@ -124,11 +126,13 @@ def test_create_data_without_sys_msg(mock_batch_completion, data_engine):
     topic_tree.tree_paths = ["path1"]
 
     # Generate data with sys_msg=False
-    dataset = data_engine.create_data(num_steps=1, batch_size=1, topic_tree=topic_tree, sys_msg=False)
+    dataset = data_engine.create_data(
+        num_steps=1, batch_size=1, topic_tree=topic_tree, sys_msg=False
+    )
 
     # Verify system message is not included
     assert len(dataset.samples) == 1
-    assert len(dataset.samples[0]["messages"]) == 2  # only user + assistant
+    assert len(dataset.samples[0]["messages"]) == 2  # noqa: PLR2004
     assert dataset.samples[0]["messages"][0]["role"] == "user"
 
 
@@ -160,11 +164,13 @@ def test_create_data_sys_msg_override(mock_batch_completion):
     topic_tree.tree_paths = ["path1"]
 
     # Override sys_msg=False with True in create_data
-    dataset = engine.create_data(num_steps=1, batch_size=1, topic_tree=topic_tree, sys_msg=True)
+    dataset = engine.create_data(
+        num_steps=1, batch_size=1, topic_tree=topic_tree, sys_msg=True
+    )
 
     # Verify system message is included despite engine default
     assert len(dataset.samples) == 1
-    assert len(dataset.samples[0]["messages"]) == 3  # system + user + assistant
+    assert len(dataset.samples[0]["messages"]) == 3  # noqa: PLR2004
     assert dataset.samples[0]["messages"][0]["role"] == "system"
 
 

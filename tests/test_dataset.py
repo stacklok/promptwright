@@ -191,6 +191,6 @@ def test_dataset_get_statistics():
     stats = dataset.get_statistics()
 
     assert stats["total_samples"] == 1
-    assert stats["avg_messages_per_sample"] == 3  # system + user + assistant
+    assert stats["avg_messages_per_sample"] == 3  # noqa: PLR2004
     assert "system" in stats["role_distribution"]
-    assert stats["role_distribution"]["system"] == 1/3  # One of three messages
+    assert stats["role_distribution"]["system"] == 1 / 3  # noqa: PLR2004
