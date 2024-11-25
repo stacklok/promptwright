@@ -169,13 +169,15 @@ class TopicTree:
 
         while retries < max_retries:
             try:
-                response = litellm.completion(
-                    model=self.model_name,
-                    max_tokens=1000,
-                    temperature=self.temperature,
-                    base_url="http://localhost:11434",
-                    messages=[{"role": "user", "content": prompt}],
-                )
+                # Prepare completion arguments
+                completion_args = {
+                    "model": self.model_name,
+                    "max_tokens": 1000,
+                    "temperature": self.temperature,
+                    "messages": [{"role": "user", "content": prompt}],
+                }
+
+                response = litellm.completion(**completion_args)
 
                 subtopics = validate_and_clean_response(
                     response.choices[0].message.content

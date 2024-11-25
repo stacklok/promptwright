@@ -6,22 +6,20 @@
 ![promptwright-cover](https://github.com/user-attachments/assets/5e345bda-df66-474b-90e7-f488d8f89032)
 
 Promptwright is a Python library from [Stacklok](https://stacklok.com) designed 
-for generating large synthetic  datasets using a local LLM. The library offers
+for generating large synthetic  datasets using a local LLM and most LLM service
+providers (openAI, Anthropic, OpenRouter etc). The library offers
 a flexible and easy-to-use set of interfaces, enabling users the ability to
 generate prompt led synthetic datasets.
 
 Promptwright was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
-in fact it started as fork, but ended up largley being a re-write, to allow
-dataset generation against a local LLM model.
+in fact it started as fork, but ended up largley being a re-write.
 
-The library interfaces with Ollama, making it easy to just pull a model and run
-Promptwright, but other providers could be used, as long as they provide a
-compatible API (happy to help expand the library to support other providers,
-just open an issue).
+The library interfaces with LiteLLM, making it easy to just pull a model and run
+locally with say something like Ollama, or call directly to an online LLM provider.
 
 ## Features
 
-- **Local LLM Client Integration**: Interact with Ollama based models
+- **Multiple Providers Support**: Works with most LLM service providers and LocalLLM's via Ollam, VLLM etc
 - **Configurable Instructions and Prompts**: Define custom instructions and system prompts
 - **YAML Configuration**: Define your generation tasks using YAML configuration files
 - **Command Line Interface**: Run generation tasks directly from the command line
@@ -135,6 +133,62 @@ promptwright start config.yaml \
   --hf-token your-token \
   --hf-tags tag1 --hf-tags tag2
 ```
+
+#### Provider Integration
+
+Promptwright uses LiteLLM to interface with LLM providers. You can specify the
+provider in the provider, model section in your config or code:
+
+```yaml
+provider: "openai"  # LLM provider
+    model: "gpt-4-1106-preview"  # Model name
+```
+
+Choose any of the listed providers [here](https://docs.litellm.ai/docs/providers/)
+and following the same naming convention.
+
+e.g.
+
+The LiteLLM convention for Google Gemini would is:
+
+```python
+from litellm import completion
+import os
+
+os.environ['GEMINI_API_KEY'] = ""
+response = completion(
+    model="gemini/gemini-pro", 
+    messages=[{"role": "user", "content": "write code for saying hi from LiteLLM"}]
+)
+```
+
+In Promptwright, you would specify the provider as `gemini` and the model as `gemini-pro`.
+
+```yaml
+provider: "gemini"  # LLM provider
+    model: "gemini-pro"  # Model name
+```
+
+For Ollama, you would specify the provider as `ollama` and the model as `mistral`
+and so on.
+
+```yaml
+provider: "ollama"  # LLM provider
+    model: "mistral:latest"  # Model name
+```
+
+##### API Keys
+
+You can set the API key for the provider in the environment variable. The key
+should be set as `PROVIDER_API_KEY`. For example, for OpenAI, you would set the
+API key as `OPENAI_API_KEY`.
+
+```bash
+export OPENAI_API_KEY
+```
+
+Again, refer to the [LiteLLM documentation](https://docs.litellm.ai/docs/providers/)
+for more information on setting up the API keys.
 
 #### Hugging Face Hub Integration
 

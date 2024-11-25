@@ -199,13 +199,16 @@ class DataEngine:
 
                     for attempt in range(self.args.max_retries):
                         try:
-                            responses = litellm.batch_completion(
-                                model=self.model_name,
-                                messages=[
+                            # Prepare batch completion arguments
+                            completion_args = {
+                                "model": self.model_name,
+                                "messages": [
                                     [{"role": "user", "content": p}] for p in prompts
                                 ],
-                                temperature=self.args.temperature,
-                            )
+                                "temperature": self.args.temperature,
+                            }
+
+                            responses = litellm.batch_completion(**completion_args)
 
                             samples = []
                             for r in responses:
