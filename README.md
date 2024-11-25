@@ -169,6 +169,14 @@ provider: "gemini"  # LLM provider
     model: "gemini-pro"  # Model name
 ```
 
+For Ollama, you would specify the provider as `ollama` and the model as `mistral`
+and so on.
+
+```yaml
+provider: "ollama"  # LLM provider
+    model: "mistral:latest"  # Model name
+```
+
 ##### API Keys
 
 You can set the API key for the provider in the environment variable. The key

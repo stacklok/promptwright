@@ -11,9 +11,6 @@ from .topic_tree import TopicTreeArguments
 
 def construct_model_string(provider: str, model: str) -> str:
     """Construct the full model string for LiteLLM."""
-    # if provider == "openai":
-    #     if "OPENAI_API_KEY" not in os.environ:
-    #         raise ValueError("OPENAI_API_KEY environment variable is required for OpenAI provider")
     return f"{provider}/{model}"
 
 
