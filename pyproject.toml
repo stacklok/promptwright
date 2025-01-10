@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11"
-certifi = "2024.8.30"
+certifi = "2024.12.14"
 charset-normalizer = "3.4.1"
 idna = "3.10"
 requests = "2.32.3"
