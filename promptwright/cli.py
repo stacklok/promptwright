@@ -113,9 +113,8 @@ def start(  # noqa: PLR0912
 
         # Create and build topic tree
         try:
-            print("Creating TopicTree object...")
             if topic_tree_jsonl:
-                print(f"Reading topic tree from JSONL file: {topic_tree_jsonl}")
+                click.echo(f"Reading topic tree from JSONL file: {topic_tree_jsonl}")
                 dict_list = read_topic_tree_from_jsonl(topic_tree_jsonl)
                 default_args = TopicTreeArguments(
                     root_prompt="default",
@@ -132,7 +131,6 @@ def start(  # noqa: PLR0912
                         model_name=model_name
                     )
                 tree = TopicTree(args=tree_args)
-                print("Building topic tree...")
                 tree.build_tree()
         except Exception as e:
             handle_error(
@@ -145,7 +143,6 @@ def start(  # noqa: PLR0912
                 tree_save_path = topic_tree_save_as or config.topic_tree.get(
                     "save_as", "topic_tree.jsonl"
                 )
-                print(f"Saving topic tree to: {tree_save_path}")
                 tree.save(tree_save_path)
                 click.echo(f"Topic tree saved to: {tree_save_path}")
             except Exception as e:
