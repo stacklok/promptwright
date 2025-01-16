@@ -96,3 +96,19 @@ def safe_literal_eval(list_string: str):
         except (SyntaxError, ValueError):
             print("Failed to parse the list due to syntax issues.")
             return None
+
+def read_topic_tree_from_jsonl(file_path: str) -> list[dict]:
+    """
+    Read the topic tree from a JSONL file.
+
+    Args:
+        file_path (str): The path to the JSONL file.
+
+    Returns:
+        list[dict]: The topic tree.
+    """
+    topic_tree = []
+    with open(file_path) as file:
+        for line in file:
+            topic_tree.append(json.loads(line.strip()))
+    return topic_tree
