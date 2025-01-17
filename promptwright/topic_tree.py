@@ -299,3 +299,21 @@ class TopicTree:
         print("Topic Tree Structure:")
         for path in self.tree_paths:
             print(" -> ".join(path))
+
+    def from_dict_list(self, dict_list: list[dict[str, Any]]) -> None:
+        """
+        Construct the topic tree from a list of dictionaries.
+
+        Args:
+            dict_list (list[dict]): The list of dictionaries representing the topic tree.
+        """
+        self.tree_paths = []
+        self.failed_generations = []
+
+        for d in dict_list:
+            if 'path' in d:
+                self.tree_paths.append(d['path'])
+            if 'failed_generation' in d:
+                self.failed_generations.append(d['failed_generation'])
+
+        print(f"Loaded {len(self.tree_paths)} paths and {len(self.failed_generations)} failed generations from JSONL file")

@@ -9,7 +9,8 @@ import yaml
 from .config import PromptWrightConfig, construct_model_string
 from .engine import DataEngine
 from .hf_hub import HFUploader
-from .topic_tree import TopicTree
+from .topic_tree import TopicTree, TopicTreeArguments
+from .utils import read_topic_tree_from_jsonl
 
 
 def handle_error(ctx: click.Context, error: Exception) -> None:  # noqa: ARG001
@@ -27,6 +28,7 @@ def cli():
 @cli.command()
 @click.argument("config_file", type=click.Path(exists=True))
 @click.option("--topic-tree-save-as", help="Override the save path for the topic tree")
+@click.option('--topic-tree-jsonl', type=click.Path(exists=True), help='Path to the JSONL file containing the topic tree.')
 @click.option("--dataset-save-as", help="Override the save path for the dataset")
 @click.option("--provider", help="Override the LLM provider (e.g., ollama)")
 @click.option("--model", help="Override the model name (e.g., mistral:latest)")
@@ -55,6 +57,7 @@ def cli():
 def start(  # noqa: PLR0912
     config_file: str,
     topic_tree_save_as: str | None = None,
+    topic_tree_jsonl: str | None = None,
     dataset_save_as: str | None = None,
     provider: str | None = None,
     model: str | None = None,
@@ -85,6 +88,9 @@ def start(  # noqa: PLR0912
             handle_error(
                 click.get_current_context(), f"Error loading config file: {str(e)}"
             )
+        # Get dataset parameters
+        dataset_config = config.get_dataset_config()
+        dataset_params = dataset_config.get("creation", {})
 
         # Prepare topic tree overrides
         tree_overrides = {}
@@ -99,26 +105,50 @@ def start(  # noqa: PLR0912
         if tree_depth:
             tree_overrides["tree_depth"] = tree_depth
 
+        # Construct model name
+        model_name = construct_model_string(
+            provider or dataset_params.get("provider", "default_provider"),
+            model or dataset_params.get("model", "default_model")
+        )
+
         # Create and build topic tree
         try:
-            tree = TopicTree(args=config.get_topic_tree_args(**tree_overrides))
-            tree.build_tree()
+            if topic_tree_jsonl:
+                click.echo(f"Reading topic tree from JSONL file: {topic_tree_jsonl}")
+                dict_list = read_topic_tree_from_jsonl(topic_tree_jsonl)
+                default_args = TopicTreeArguments(
+                    root_prompt="default",
+                    model_name=model_name
+                )
+                tree = TopicTree(args=default_args)
+                tree.from_dict_list(dict_list)
+            else:
+                if hasattr(config, 'topic_tree'):
+                    tree_args = config.get_topic_tree_args(**tree_overrides)
+                else:
+                    tree_args = TopicTreeArguments(
+                        root_prompt="default",
+                        model_name=model_name
+                    )
+                tree = TopicTree(args=tree_args)
+                tree.build_tree()
         except Exception as e:
             handle_error(
                 click.get_current_context(), f"Error building topic tree: {str(e)}"
             )
 
-        # Save topic tree
-        try:
-            tree_save_path = topic_tree_save_as or config.topic_tree.get(
-                "save_as", "topic_tree.jsonl"
-            )
-            tree.save(tree_save_path)
-            click.echo(f"Topic tree saved to: {tree_save_path}")
-        except Exception as e:
-            handle_error(
-                click.get_current_context(), f"Error saving topic tree: {str(e)}"
-            )
+        # Save topic tree if JSONL file is not provided
+        if not topic_tree_jsonl:
+            try:
+                tree_save_path = topic_tree_save_as or config.topic_tree.get(
+                    "save_as", "topic_tree.jsonl"
+                )
+                tree.save(tree_save_path)
+                click.echo(f"Topic tree saved to: {tree_save_path}")
+            except Exception as e:
+                handle_error(
+                    click.get_current_context(), f"Error saving topic tree: {str(e)}"
+                )
 
         # Prepare engine overrides
         engine_overrides = {}
@@ -137,17 +167,11 @@ def start(  # noqa: PLR0912
                 click.get_current_context(), f"Error creating data engine: {str(e)}"
             )
 
-        # Get dataset parameters
-        dataset_config = config.get_dataset_config()
-        dataset_params = dataset_config.get("creation", {})
-
         # Construct model name for dataset creation
-        if provider and model:
-            model_name = construct_model_string(provider, model)
-        else:
-            dataset_provider = dataset_params.get("provider", "ollama")
-            dataset_model = dataset_params.get("model", "mistral:latest")
-            model_name = construct_model_string(dataset_provider, dataset_model)
+        model_name = construct_model_string(
+            provider or dataset_params.get("provider", "ollama"),
+            model or dataset_params.get("model", "mistral:latest")
+        )
 
         # Create dataset with overrides
         try:
