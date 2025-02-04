@@ -7,7 +7,7 @@
 
 
 Promptwright is a Python library from [Stacklok](https://stacklok.com) designed 
-for generating large synthetic  datasets using a local LLM and most LLM service
+for generating large synthetic  datasets using a either a local LLM and most LLM service
 providers (openAI, Anthropic, OpenRouter etc). The library offers
 a flexible and easy-to-use set of interfaces, enabling users the ability to
 generate prompt led synthetic datasets.
@@ -15,12 +15,9 @@ generate prompt led synthetic datasets.
 Promptwright was inspired by the [redotvideo/pluto](https://github.com/redotvideo/pluto),
 in fact it started as fork, but ended up largley being a re-write.
 
-The library interfaces with LiteLLM, making it easy to just pull a model and run
-locally with say something like Ollama, or call directly to an online LLM provider.
-
 ## Features
 
-- **Multiple Providers Support**: Works with most LLM service providers and LocalLLM's via Ollam, VLLM etc
+- **Multiple Providers Support**: Works with most LLM service providers and LocalLLM's via Ollama, VLLM etc
 - **Configurable Instructions and Prompts**: Define custom instructions and system prompts
 - **YAML Configuration**: Define your generation tasks using YAML configuration files
 - **Command Line Interface**: Run generation tasks directly from the command line
@@ -33,8 +30,6 @@ locally with say something like Ollama, or call directly to an online LLM provid
 
 - Python 3.11+
 - Poetry (for dependency management)
-- Ollama CLI installed and running (see [Ollama Installation](https://ollama.com/)
-- A Model pulled via Ollama (see [Model Compatibility](#model-compatibility))
 - (Optional) Hugging Face account and API token for dataset upload
 
 ### Installation
