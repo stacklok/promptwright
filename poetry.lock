@@ -453,13 +453,13 @@ toml = ["tomli"]
 
 [[package]]
 name = "datasets"
-version = "3.3.0"
+version = "3.3.1"
 description = "HuggingFace community-driven open-source library of datasets"
 optional = false
 python-versions = ">=3.9.0"
 files = [
-    {file = "datasets-3.3.0-py3-none-any.whl", hash = "sha256:22312d09626f8fc3aa0a237b0c164997f5903bddd4c4c9e27dbaf563754c681b"},
-    {file = "datasets-3.3.0.tar.gz", hash = "sha256:54c607b06f6eaa1572e21e200d2870d89d50e3bcc622dc2021a53a6ce4f684c2"},
+    {file = "datasets-3.3.1-py3-none-any.whl", hash = "sha256:85182cbfa18faed0fb9dfc202f2668f1fed130fb88f8b3651b3cd8c4b3e61b1b"},
+    {file = "datasets-3.3.1.tar.gz", hash = "sha256:7dfb7bb345513bce194cf612cebd6f78e46f7d981342b89364b5ab813c7049a9"},
 ]
 
 [package.dependencies]
@@ -2743,4 +2743,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11"
-content-hash = "66354990fdd822bb3edbe65a38dd9ca80c08f731b6a1a5035e93cc4f1eb3ef92"
+content-hash = "a336a9a4e0878000530d41e3d1a5eaee7f4fff5a19112dbc3a618cb5b247fac7"
