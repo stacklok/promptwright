@@ -984,14 +984,14 @@ referencing = ">=0.31.0"
 
 [[package]]
 name = "litellm"
-version = "1.60.6"
+version = "1.63.11"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = "!=2.7.*,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,!=3.7.*,>=3.8"
 groups = ["main"]
 files = [
-    {file = "litellm-1.60.6-py3-none-any.whl", hash = "sha256:7c2d61f5073c823aa7b069328fed34e61d0e9a1777f91e758c1770724d060578"},
-    {file = "litellm-1.60.6.tar.gz", hash = "sha256:b9fdd38b482abc6b6d6afffa6fbf25912b70b1b34ca91a5c798aba2d81bef322"},
+    {file = "litellm-1.63.11-py3-none-any.whl", hash = "sha256:f3915dc35309b164ef2419ad05e5241ddd97f3f47aa036df28365bf889d8ea23"},
+    {file = "litellm-1.63.11.tar.gz", hash = "sha256:89930895121d0cbf5553e560ed886c45be480ceec0eca3c53ae441473d5d46a4"},
 ]
 
 [package.dependencies]
@@ -1001,7 +1001,7 @@ httpx = ">=0.23.0"
 importlib-metadata = ">=6.8.0"
 jinja2 = ">=3.1.2,<4.0.0"
 jsonschema = ">=4.22.0,<5.0.0"
-openai = ">=1.61.0"
+openai = ">=1.66.1"
 pydantic = ">=2.0.0,<3.0.0"
 python-dotenv = ">=0.2.0"
 tiktoken = ">=0.7.0"
@@ -1325,14 +1325,14 @@ files = [
 
 [[package]]
 name = "openai"
-version = "1.61.1"
+version = "1.66.5"
 description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "openai-1.61.1-py3-none-any.whl", hash = "sha256:72b0826240ce26026ac2cd17951691f046e5be82ad122d20a8e1b30ca18bd11e"},
-    {file = "openai-1.61.1.tar.gz", hash = "sha256:ce1851507218209961f89f3520e06726c0aa7d0512386f0f977e3ac3e4f2472e"},
+    {file = "openai-1.66.5-py3-none-any.whl", hash = "sha256:74be528175f8389f67675830c51a15bd51e874425c86d3de6153bf70ed6c2884"},
+    {file = "openai-1.66.5.tar.gz", hash = "sha256:f61b8fac29490ca8fdc6d996aa6926c18dbe5639536f8c40219c40db05511b11"},
 ]
 
 [package.dependencies]
@@ -2820,4 +2820,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "cc81262de5dfdee61a810781f36ecef5d12bd0be3eaf54f9bf6d1a7ea5a8e360"
+content-hash = "a9af3e8f46b8155cbdedf9048f63b2789ee06548fa607431ad60ecbfdc50cda8"
